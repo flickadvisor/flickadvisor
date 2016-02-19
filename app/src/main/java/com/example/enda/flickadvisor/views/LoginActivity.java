@@ -3,23 +3,21 @@ package com.example.enda.flickadvisor.views;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
-
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
-
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,15 +27,24 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.enda.flickadvisor.R;
+import com.example.enda.flickadvisor.models.Credentials;
+import com.example.enda.flickadvisor.models.User;
+import com.example.enda.flickadvisor.services.ServiceGenerator;
+import com.example.enda.flickadvisor.services.UserApiService;
+import com.example.enda.flickadvisor.services.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
-import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -55,13 +62,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * A dummy authentication store containing known user names and passwords.
      * TODO: remove after connecting to a real authentication system.
      */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
+    private static final String TAG_ACTIVITY = "LOGIN";
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private UserLoginTask mAuthTask = null;
 
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -82,7 +86,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.login || id == EditorInfo.IME_NULL) {
+                if (id == R.id.credentials || id == EditorInfo.IME_NULL) {
                     attemptLogin();
                     return true;
                 }
@@ -152,10 +156,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
-
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
@@ -193,9 +193,55 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
+
+            UserApiService userApiService = ServiceGenerator.createService(UserApiService.class);
+
+            Call<User> call = userApiService.login(new Credentials(email, password));
+            // make call to webservice
+            call.enqueue(new Callback<User>() {
+                @Override
+                public void onResponse(Call<User> call, Response<User> response) {
+                    if (response.isSuccess()) {
+                        UserService userService = new UserService(getApplicationContext());
+                        User user = response.body(); // get user from HTTP response
+                        userService.saveUser(user);
+                        success();
+                    }
+                    handleResponseCode(response.code());
+                }
+
+                @Override
+                public void onFailure(Call<User> call, Throwable t) {
+                    Log.e(TAG_ACTIVITY, "Error: " + t.getMessage());
+                    handleResponseCode(0);
+                }
+            });
         }
+    }
+
+    private void handleResponseCode(int code) {
+        showProgress(false);
+        String message;
+        switch (code) {
+            case 200:
+                message = "Successfully Logged in.";
+                break;
+            case 404:
+                message = "Incorrect email/password.";
+                break;
+            case 500:
+                message = "Something went wrong in our server.";
+                break;
+            default:
+                message = "Something went wrong.";
+                break;
+        }
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void success() {
+        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+        finish();
     }
 
     private boolean isEmailValid(String email) {
@@ -204,9 +250,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        return password.length() > 4;
+        return passwordRegex.matcher(password).matches()
+                && password.length() > 7;
     }
+
+    private static final Pattern passwordRegex
+            = Pattern.compile("^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!£$%^&*-+=#@]).+$");
 
     /**
      * Shows the progress UI and hides the login form.
@@ -302,62 +351,16 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-
-        private final String mEmail;
-        private final String mPassword;
-
-        UserLoginTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
-
-            // TODO: register the new account here.
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            showProgress(false);
-
-            if (success) {
-                finish();
-            } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false);
-        }
-    }
 
     @OnClick(R.id.go_to_sign_up)
     public void goToSignUpActivity() {
         Intent intent = new Intent(this, SignUpActivity.class);
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.skip_login)
+    public void skipLogin() {
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 }

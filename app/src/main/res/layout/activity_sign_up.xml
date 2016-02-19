@@ -10,7 +10,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.enda.flickadvisor.views.SignUpActivity">
 
-    <!-- Login progress -->
+    <!-- Credentials progress -->
     <ProgressBar
         android:id="@+id/sign_up_progress"
         style="?android:attr/progressBarStyleLarge"
@@ -25,11 +25,14 @@
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:layout_marginTop="100dp"
             android:id="@+id/email_sign_up_form"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="140dp"/>
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -66,6 +69,8 @@
 
             <Button
                 android:id="@+id/email_sign_up_button"
+                android:backgroundTint="@color/colorAccent"
+                android:textColor="@color/colorTextLight"
                 style="?android:textAppearanceSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

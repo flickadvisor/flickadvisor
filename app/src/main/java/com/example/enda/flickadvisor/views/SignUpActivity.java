@@ -3,20 +3,19 @@ package com.example.enda.flickadvisor.views;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
-
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -30,25 +29,20 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.enda.flickadvisor.R;
+import com.example.enda.flickadvisor.models.User;
+import com.example.enda.flickadvisor.services.ServiceGenerator;
+import com.example.enda.flickadvisor.services.UserApiService;
+import com.example.enda.flickadvisor.services.UserService;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
-import com.example.enda.flickadvisor.R;
-import com.example.enda.flickadvisor.models.User;
-import com.example.enda.flickadvisor.services.UserApiService;
-import com.google.gson.ExclusionStrategy;
-import com.google.gson.FieldAttributes;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import io.realm.RealmObject;
-import lombok.val;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -69,11 +63,14 @@ public class SignUpActivity extends AppCompatActivity implements LoaderCallbacks
     private View mProgressView;
     private View mSignUpFormView;
 
+    private UserService userService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
         // Set up the login form.
+        userService = new UserService(getApplicationContext());
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
 
@@ -85,7 +82,7 @@ public class SignUpActivity extends AppCompatActivity implements LoaderCallbacks
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.login || id == EditorInfo.IME_NULL) {
+                if (id == R.id.credentials || id == EditorInfo.IME_NULL) {
                     try {
                         attemptSignUp();
                     } catch (IOException e) {
@@ -202,43 +199,51 @@ public class SignUpActivity extends AppCompatActivity implements LoaderCallbacks
             // perform the user login attempt.
             showProgress(true);
 
-            String API_URL = "http://10.0.2.2:9000/";
+            UserApiService userApiService = ServiceGenerator.createService(UserApiService.class);
 
-            Gson gson = new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
-                @Override
-                public boolean shouldSkipField(FieldAttributes f) {
-                    return f.getDeclaringClass().equals(RealmObject.class);
-                }
-
-                @Override
-                public boolean shouldSkipClass(Class<?> clazz) {
-                    return false;
-                }
-            }).create();
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(API_URL)
-                    .addConverterFactory(GsonConverterFactory.create(gson))
-                    .build();
-
-            UserApiService userService = retrofit.create(UserApiService.class);
-
-            Call<User> call = userService.createUser(new User(email, password));
+            Call<User> call = userApiService.createUser(new User(email, password));
+            // make call to webservice
             call.enqueue(new Callback<User>() {
                 @Override
                 public void onResponse(Call<User> call, Response<User> response) {
                     if (response.isSuccess()) {
-                        User user = response.body();
-                    } else {
-                        Toast.makeText(getApplicationContext(), response.message(), Toast.LENGTH_LONG).show();
+                        userService = new UserService(getApplicationContext());
+                        User user = response.body(); // get user from HTTP response
+                        userService.saveUser(user);
+                        success();
                     }
+                    handleResponseCode(response.code());
                 }
 
                 @Override
                 public void onFailure(Call<User> call, Throwable t) {
-                    Log.e(TAG_ACTIVITY, t.getMessage());
+                    Log.e(TAG_ACTIVITY, "Error: " + t.getMessage());
+                    handleResponseCode(0);
                 }
             });
         }
+    }
+
+    private void handleResponseCode(int code) {
+        showProgress(false);
+        String message;
+        switch (code) {
+            case 409:
+                message = "This email is already in use.";
+                break;
+            case 500:
+                message = "Something went wrong in our server.";
+                break;
+            default:
+                message = "Something went wrong.";
+                break;
+        }
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void success() {
+        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+        finish();
     }
 
     private boolean isEmailValid(String email) {
@@ -247,9 +252,12 @@ public class SignUpActivity extends AppCompatActivity implements LoaderCallbacks
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        return password.length() > 4;
+        return passwordRegex.matcher(password).matches()
+                && password.length() > 7;
     }
+
+    private static final Pattern passwordRegex
+            = Pattern.compile("^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!£$%^&*-+=#@]).+$");
 
     /**
      * Shows the progress UI and hides the login form.
