@@ -1,4 +1,4 @@
-package com.example.enda.flickadvisor.services;
+package com.example.enda.flickadvisor.services.api;
 
 import com.example.enda.flickadvisor.models.Credentials;
 import com.example.enda.flickadvisor.models.User;

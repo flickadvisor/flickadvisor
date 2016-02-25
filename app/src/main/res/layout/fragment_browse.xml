@@ -1,0 +1,54 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.enda.flickadvisor.fragments.BrowseFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:paddingTop="16dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:id="@+id/popularHeader"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_marginStart="20dp"
+                    android:id="@+id/popularTitle"
+                    android:text="@string/title_popular"
+                    android:textStyle="bold"
+                    android:textSize="24sp"
+                    android:textColor="@color/colorTextDark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+                <Button
+                    android:layout_marginEnd="16dp"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:text="@string/action_more"
+                    android:textSize="16sp"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:orientation="horizontal"
+                android:id="@+id/browse_recycler_view"
+                android:layout_width="wrap_content"
+                android:layout_height="272dp"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+</FrameLayout>
