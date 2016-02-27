@@ -33,8 +33,8 @@ import com.example.enda.flickadvisor.R;
 import com.example.enda.flickadvisor.models.Credentials;
 import com.example.enda.flickadvisor.models.User;
 import com.example.enda.flickadvisor.services.ServiceGenerator;
-import com.example.enda.flickadvisor.services.api.UserApiService;
 import com.example.enda.flickadvisor.services.UserService;
+import com.example.enda.flickadvisor.services.interfaces.UserApiService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +42,6 @@ import java.util.regex.Pattern;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import icepick.State;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -73,9 +72,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
-
-    @State String email;
-    @State String password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

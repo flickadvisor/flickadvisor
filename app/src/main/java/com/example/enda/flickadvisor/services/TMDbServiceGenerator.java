@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 /**
  * Created by enda on 21/02/16.
  */
-public class TmdbServiceGenerator {
+public class TMDbServiceGenerator {
 
     private static final String API_BASE_URL = "https://api.themoviedb.org/3/";
 

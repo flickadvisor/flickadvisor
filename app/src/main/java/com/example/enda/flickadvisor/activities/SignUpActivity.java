@@ -32,7 +32,7 @@ import android.widget.Toast;
 import com.example.enda.flickadvisor.R;
 import com.example.enda.flickadvisor.models.User;
 import com.example.enda.flickadvisor.services.ServiceGenerator;
-import com.example.enda.flickadvisor.services.api.UserApiService;
+import com.example.enda.flickadvisor.services.interfaces.UserApiService;
 import com.example.enda.flickadvisor.services.UserService;
 
 import java.io.IOException;

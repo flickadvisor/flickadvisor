@@ -1,22 +1,27 @@
 package com.example.enda.flickadvisor.models;
 
+import com.google.gson.JsonObject;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Created by enda on 17/02/16.
  */
+//@Parcel(value = Parcel.Serialization.BEAN, analyze = { Movie.class })
 public class Movie extends RealmObject {
     @PrimaryKey
     private Long id;
     private String title;
-    private Long imdb_id;
+    private String imdbId;
     private String language;
+    private boolean adult;
     private String overview;
     private String backdropPath;
     private String posterPath;
@@ -24,12 +29,38 @@ public class Movie extends RealmObject {
     private double popularity;
     private double runtime;
     private String status;
-    private double voteAverage;
-    private int voteCount;
+    private float voteAverage;
+    private long voteCount;
     private RealmList<MovieReview> reviews;
     private RealmList<Genre> genres;
 
     public Movie() {
+    }
+
+    public Movie(JsonObject json) {
+        this.id = json.get("id").getAsLong();
+        this.title = json.get("original_title").getAsString();
+        this.imdbId = json.get("imdb_id").getAsString();
+        this.language = json.get("original_language").getAsString();
+        this.adult = json.get("adult").getAsBoolean();
+        this.overview = json.get("overview").getAsString();
+        this.backdropPath = "http://image.tmdb.org/t/p/w185" + json.get("backdrop_path").getAsString();
+        this.posterPath = "http://image.tmdb.org/t/p/w185" + json.get("poster_path").getAsString();
+        //region this.releaseDate = json.get("release_date").getDate();
+        String dateString = json.get("release_date").getAsString();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        try {
+            this.releaseDate = simpleDateFormat.parse(dateString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        //endregion
+        this.popularity = json.get("popularity").getAsDouble();
+        this.runtime = json.get("runtime").getAsDouble();
+        this.status = json.get("status").getAsString();
+        this.voteAverage = json.get("vote_average").getAsFloat();
+        this.voteCount = json.get("vote_count").getAsLong();
     }
 
     public Long getId() {
@@ -48,12 +79,12 @@ public class Movie extends RealmObject {
         this.title = title;
     }
 
-    public Long getImdb_id() {
-        return imdb_id;
+    public String getImdbId() {
+        return imdbId;
     }
 
-    public void setImdb_id(Long imdb_id) {
-        this.imdb_id = imdb_id;
+    public void setImdbId(String imdbId) {
+        this.imdbId = imdbId;
     }
 
     public String getLanguage() {
@@ -62,6 +93,14 @@ public class Movie extends RealmObject {
 
     public void setLanguage(String language) {
         this.language = language;
+    }
+
+    public boolean isAdult() {
+        return adult;
+    }
+
+    public void setAdult(boolean adult) {
+        this.adult = adult;
     }
 
     public String getOverview() {
@@ -120,19 +159,19 @@ public class Movie extends RealmObject {
         this.status = status;
     }
 
-    public double getVoteAverage() {
+    public float getVoteAverage() {
         return voteAverage;
     }
 
-    public void setVoteAverage(double voteAverage) {
+    public void setVoteAverage(float voteAverage) {
         this.voteAverage = voteAverage;
     }
 
-    public int getVoteCount() {
+    public long getVoteCount() {
         return voteCount;
     }
 
-    public void setVoteCount(int voteCount) {
+    public void setVoteCount(long voteCount) {
         this.voteCount = voteCount;
     }
 

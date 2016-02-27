@@ -1,15 +1,16 @@
 package com.example.enda.flickadvisor.models;
 
+import com.google.gson.JsonObject;
+
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Created by enda on 17/02/16.
  */
+//@Parcel(value = Parcel.Serialization.BEAN, analyze = { Genre.class })
 public class Genre extends RealmObject {
     @PrimaryKey
     private Long id;
@@ -19,6 +20,11 @@ public class Genre extends RealmObject {
     private RealmList<Series> series;
 
     public Genre() {
+    }
+
+    public Genre(JsonObject json) {
+        this.id = json.get("id").getAsLong();
+        this.name = json.get("name").getAsString();
     }
 
     public Long getId() {

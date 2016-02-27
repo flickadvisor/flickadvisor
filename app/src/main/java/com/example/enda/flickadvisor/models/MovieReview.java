@@ -4,12 +4,11 @@ import java.util.Date;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Created by enda on 17/02/16.
  */
+//@Parcel(value = Parcel.Serialization.BEAN, analyze = { MovieReview.class })
 public class MovieReview extends RealmObject {
     @PrimaryKey
     private Long id;
