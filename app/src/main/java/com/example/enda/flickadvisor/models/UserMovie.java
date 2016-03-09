@@ -3,8 +3,6 @@ package com.example.enda.flickadvisor.models;
 import java.util.Date;
 
 import io.realm.RealmObject;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Created by enda on 17/02/16.
@@ -12,12 +10,23 @@ import lombok.Setter;
 public class UserMovie extends RealmObject {
     private Movie movie;
     private User user;
-    private boolean onWatchList;
-    private boolean onWatchedList;
-    private boolean hidden;
+    private boolean isOnWatchList;
+    private boolean isOnWatchedList;
+    private boolean isHidden;
+    private boolean isFavourite;
     private Date dateAdded;
 
     public UserMovie() {
+    }
+
+    public UserMovie(Movie movie, User user) {
+        this.movie = movie;
+        this.user = user;
+        this.isOnWatchList = false;
+        this.isOnWatchedList = false;
+        this.isOnWatchList = false;
+        this.isFavourite = false;
+        this.dateAdded = new Date(System.currentTimeMillis());
     }
 
     public Movie getMovie() {
@@ -37,27 +46,35 @@ public class UserMovie extends RealmObject {
     }
 
     public boolean isOnWatchList() {
-        return onWatchList;
+        return isOnWatchList;
     }
 
-    public void setOnWatchList(boolean onWatchList) {
-        this.onWatchList = onWatchList;
+    public void setIsOnWatchList(boolean isOnWatchList) {
+        this.isOnWatchList = isOnWatchList;
     }
 
     public boolean isOnWatchedList() {
-        return onWatchedList;
+        return isOnWatchedList;
     }
 
-    public void setOnWatchedList(boolean onWatchedList) {
-        this.onWatchedList = onWatchedList;
+    public void setIsOnWatchedList(boolean isOnWatchedList) {
+        this.isOnWatchedList = isOnWatchedList;
     }
 
     public boolean isHidden() {
-        return hidden;
+        return isHidden;
     }
 
-    public void setHidden(boolean hidden) {
-        this.hidden = hidden;
+    public void setIsHidden(boolean isHidden) {
+        this.isHidden = isHidden;
+    }
+
+    public boolean isFavourite() {
+        return isFavourite;
+    }
+
+    public void setIsFavourite(boolean isFavourite) {
+        this.isFavourite = isFavourite;
     }
 
     public Date getDateAdded() {

@@ -31,4 +31,5 @@
     <string name="tmbd_api_key">f8451fab6d4c97557317ad23d839fb54</string>
     <string name="title_activity_movie"></string>
     <string name="title_in_theatres">In Cinemas</string>
+    <string name="action_logout">Sign Out</string>
 </resources>

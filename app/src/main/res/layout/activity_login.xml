@@ -78,24 +78,6 @@
                 android:text="@string/action_sign_in"
                 android:textStyle="bold" />
 
-            <Button
-                android:layout_gravity="center_horizontal"
-                android:id="@+id/skip_login"
-                style="?android:attr/borderlessButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginTop="20dp"
-                android:text="@string/action_skip_login" />
-
-            <Button
-                android:layout_gravity="center_horizontal"
-                android:id="@+id/go_to_sign_up"
-                style="?android:attr/borderlessButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginTop="40dp"
-                android:text="@string/action_go_to_sign_up" />
-
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

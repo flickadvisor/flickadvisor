@@ -32,7 +32,7 @@ public class BrowseTvSeriesRecyclerAdapter extends RecyclerView.Adapter<BrowseIt
     public BrowseItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
-        View mView = inflater.inflate(R.layout.browse_preview_view, parent, false);
+        View mView = inflater.inflate(R.layout.movie_card_v1, parent, false);
 
         return new BrowseItemViewHolder(mView);
     }

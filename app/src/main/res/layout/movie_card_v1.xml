@@ -9,8 +9,9 @@
         android:foreground="?android:attr/selectableItemBackground"
         android:clickable="true"
         android:id="@+id/browse_card"
-        card_view:cardCornerRadius="1dp"
-        android:layout_margin="4dp"
+        card_view:cardCornerRadius="2dp"
+        card_view:cardElevation="3dp"
+        android:layout_margin="6dp"
         android:layout_width="@dimen/poster_card_width"
         android:layout_height="264dp">
 
@@ -22,6 +23,7 @@
                 android:id="@+id/preview_card_image"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/poster_card_height" />
+
             <TextView
                 android:gravity="bottom"
                 android:maxLines="2"
@@ -38,6 +40,7 @@
                 android:layout_height="wrap_content" />
 
         </RelativeLayout>
+
 
     </android.support.v7.widget.CardView>
 

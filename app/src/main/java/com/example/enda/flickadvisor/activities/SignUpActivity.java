@@ -31,7 +31,7 @@ import android.widget.Toast;
 
 import com.example.enda.flickadvisor.R;
 import com.example.enda.flickadvisor.models.User;
-import com.example.enda.flickadvisor.services.ServiceGenerator;
+import com.example.enda.flickadvisor.services.ApiServiceGenerator;
 import com.example.enda.flickadvisor.services.interfaces.UserApiService;
 import com.example.enda.flickadvisor.services.UserService;
 
@@ -55,7 +55,7 @@ public class SignUpActivity extends AppCompatActivity implements LoaderCallbacks
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
-    private static final String TAG_ACTIVITY = "SIGN_UP";
+    private static final String TAG_ACTIVITY = "ACTIVITY_SIGN_UP";
 
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -63,21 +63,15 @@ public class SignUpActivity extends AppCompatActivity implements LoaderCallbacks
     private View mProgressView;
     private View mSignUpFormView;
 
-    private UserService userService;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
         // Set up the login form.
-        userService = new UserService(getApplicationContext());
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(R.id.password);
-
-        mEmailView.setText("foo2@bar.com");
-        mPasswordView.setText("1234567");
 
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -154,7 +148,6 @@ public class SignUpActivity extends AppCompatActivity implements LoaderCallbacks
         }
     }
 
-
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
@@ -199,7 +192,7 @@ public class SignUpActivity extends AppCompatActivity implements LoaderCallbacks
             // perform the user login attempt.
             showProgress(true);
 
-            UserApiService userApiService = ServiceGenerator.createService(UserApiService.class);
+            UserApiService userApiService = ApiServiceGenerator.createService(UserApiService.class);
 
             Call<User> call = userApiService.createUser(new User(email, password));
             // make call to webservice
@@ -207,10 +200,8 @@ public class SignUpActivity extends AppCompatActivity implements LoaderCallbacks
                 @Override
                 public void onResponse(Call<User> call, Response<User> response) {
                     if (response.isSuccess()) {
-                        userService = new UserService(getApplicationContext());
                         User user = response.body(); // get user from HTTP response
-                        userService.saveUser(user);
-                        success();
+                        UserService.saveUser(user);
                     }
                     handleResponseCode(response.code());
                 }
@@ -228,6 +219,10 @@ public class SignUpActivity extends AppCompatActivity implements LoaderCallbacks
         showProgress(false);
         String message;
         switch (code) {
+            case 200:
+                message = "Sign up successful.";
+                success();
+                break;
             case 409:
                 message = "This email is already in use.";
                 break;
@@ -238,11 +233,11 @@ public class SignUpActivity extends AppCompatActivity implements LoaderCallbacks
                 message = "Something went wrong.";
                 break;
         }
-        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     private void success() {
-        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+        startActivity(new Intent(this, MainActivity.class));
         finish();
     }
 

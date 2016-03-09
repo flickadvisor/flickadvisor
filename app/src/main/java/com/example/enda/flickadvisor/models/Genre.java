@@ -58,4 +58,5 @@ public class Genre extends RealmObject {
     public void setSeries(RealmList<Series> series) {
         this.series = series;
     }
+
 }

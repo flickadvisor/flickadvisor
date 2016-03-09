@@ -8,6 +8,8 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="poster_card_height">207dp</dimen>
     <dimen name="poster_card_width">150dp</dimen>
-    <dimen name="poster_height">196dp</dimen>
+    <dimen name="poster_height">205dp</dimen>
     <dimen name="poster_width">142dp</dimen>
+    <dimen name="star_height">28dp</dimen>
+    <dimen name="star_width">28dp</dimen>
 </resources>

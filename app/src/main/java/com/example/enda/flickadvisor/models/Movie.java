@@ -27,7 +27,7 @@ public class Movie extends RealmObject {
     private String posterPath;
     private Date releaseDate;
     private double popularity;
-    private double runtime;
+    private int runtime;
     private String status;
     private float voteAverage;
     private long voteCount;
@@ -41,7 +41,8 @@ public class Movie extends RealmObject {
         this.id = json.get("id").getAsLong();
         this.title = json.get("original_title").getAsString();
         this.imdbId = json.get("imdb_id").getAsString();
-        this.language = json.get("original_language").getAsString();
+//        this.language = json.get("original_language").getAsString();
+        this.language = json.get("spoken_languages").getAsJsonArray().get(0).getAsJsonObject().get("name").getAsString();
         this.adult = json.get("adult").getAsBoolean();
         this.overview = json.get("overview").getAsString();
         this.backdropPath = "http://image.tmdb.org/t/p/w185" + json.get("backdrop_path").getAsString();
@@ -57,7 +58,7 @@ public class Movie extends RealmObject {
 
         //endregion
         this.popularity = json.get("popularity").getAsDouble();
-        this.runtime = json.get("runtime").getAsDouble();
+        this.runtime = json.get("runtime").getAsInt();
         this.status = json.get("status").getAsString();
         this.voteAverage = json.get("vote_average").getAsFloat();
         this.voteCount = json.get("vote_count").getAsLong();
@@ -143,11 +144,11 @@ public class Movie extends RealmObject {
         this.popularity = popularity;
     }
 
-    public double getRuntime() {
+    public int getRuntime() {
         return runtime;
     }
 
-    public void setRuntime(double runtime) {
+    public void setRuntime(int runtime) {
         this.runtime = runtime;
     }
 

@@ -20,11 +20,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 // https://futurestud.io/blog/android-basic-authentication-with-retrofit
-public class ServiceGenerator {
+public class ApiServiceGenerator {
 
 //    private static final String API_BASE_URL = "http://10.0.2.2:9000/";
     private static final String API_BASE_URL = "http://10.0.3.2:9000/";
-//    private static final String API_BASE_URL = "http://192.168.0.15:9000/";
+//    private static final String API_BASE_URL = "http://192.168.0.21:9000/";
 
     private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 

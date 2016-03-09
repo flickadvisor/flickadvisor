@@ -1,7 +1,5 @@
 package com.example.enda.flickadvisor.services;
 
-import android.content.Context;
-
 import com.example.enda.flickadvisor.models.User;
 
 import io.realm.Realm;
@@ -11,15 +9,9 @@ import io.realm.Realm;
  */
 public class UserService {
 
-    private Realm realm;
-    private Context context;
+    private static final Realm realm = Realm.getDefaultInstance();
 
-    public UserService(Context context) {
-        this.context = context;
-        this.realm = Realm.getInstance(context);
-    }
-
-    public void saveUser(User user) {
+    public static void saveUser(User user) {
         if (getUserWithId(user.getId()) != null) {
             User old = getUserWithId(user.getId());
             removeUser(old);
@@ -29,23 +21,36 @@ public class UserService {
         realm.commitTransaction();
     }
 
-    private void removeUser(User user) {
+    public static User getCurrentUser() {
+        User user = realm.where(User.class)
+                .findFirst();
+        return user == null ? null : user;
+    }
+
+    private static void removeUser(User user) {
         realm.beginTransaction();
         user.removeFromRealm();
         realm.commitTransaction();
     }
 
-    private User getUserWithId(Long id) {
+    private static User getUserWithId(Long id) {
         User user = realm.where(User.class)
                 .equalTo("id", id)
                 .findFirst();
         return user == null ? null : user;
     }
 
-    public boolean isLoggedIn() {
-        int count = realm.where(User.class)
-                .findAll().size();
-        return count >= 1;
+    public static boolean isLoggedIn() {
+        User user = realm.where(User.class)
+        .findFirst();
+        return user != null;
     }
 
+    public static void logout() {
+        realm.beginTransaction();
+        User user = realm.where(User.class)
+                .findFirst();
+        user.removeFromRealm();
+        realm.commitTransaction();
+    }
 }

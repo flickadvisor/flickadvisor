@@ -1,7 +1,5 @@
 package com.example.enda.flickadvisor.models;
 
-import java.util.Date;
-
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -14,7 +12,8 @@ public class MovieReview extends RealmObject {
     private Long id;
     private float rating;
     private String description;
-    private Date date;
+    private long date; // Realm is limiting me here, cannot parse long to date, using long and will format for display
+//    private Date date;
 
     public MovieReview() {
     }
@@ -43,11 +42,11 @@ public class MovieReview extends RealmObject {
         this.description = description;
     }
 
-    public Date getDate() {
+    public long getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(long date) {
         this.date = date;
     }
 }

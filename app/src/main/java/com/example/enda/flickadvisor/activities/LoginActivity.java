@@ -32,7 +32,7 @@ import android.widget.Toast;
 import com.example.enda.flickadvisor.R;
 import com.example.enda.flickadvisor.models.Credentials;
 import com.example.enda.flickadvisor.models.User;
-import com.example.enda.flickadvisor.services.ServiceGenerator;
+import com.example.enda.flickadvisor.services.ApiServiceGenerator;
 import com.example.enda.flickadvisor.services.UserService;
 import com.example.enda.flickadvisor.services.interfaces.UserApiService;
 
@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -62,10 +61,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * A dummy authentication store containing known user names and passwords.
      * TODO: remove after connecting to a real authentication system.
      */
-    private static final String TAG_ACTIVITY = "LOGIN";
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
+    private static final String TAG_ACTIVITY = "ACTIVITY_LOGIN";
 
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -194,7 +190,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // perform the user login attempt.
             showProgress(true);
 
-            UserApiService userApiService = ServiceGenerator.createService(UserApiService.class);
+            UserApiService userApiService = ApiServiceGenerator.createService(UserApiService.class);
 
             Call<User> call = userApiService.login(new Credentials(email, password));
             // make call to webservice
@@ -202,9 +198,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 @Override
                 public void onResponse(Call<User> call, Response<User> response) {
                     if (response.isSuccess()) {
-                        UserService userService = new UserService(getApplicationContext());
                         User user = response.body(); // get user from HTTP response
-                        userService.saveUser(user);
+                        UserService.saveUser(user);
                         success();
                     }
                     handleResponseCode(response.code());
@@ -224,9 +219,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         String message;
         switch (code) {
             case 200:
-                message = "Successfully Logged in.";
+                message = "Successfully logged in.";
                 break;
-            case 404:
+            case 401:
                 message = "Incorrect email/password.";
                 break;
             case 500:
@@ -236,11 +231,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 message = "Something went wrong.";
                 break;
         }
-        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     private void success() {
-        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+        startActivity(new Intent(this, MainActivity.class));
         finish();
     }
 
@@ -336,7 +331,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mEmailView.setAdapter(adapter);
     }
 
-
     private interface ProfileQuery {
         String[] PROJECTION = {
                 ContactsContract.CommonDataKinds.Email.ADDRESS,
@@ -347,21 +341,5 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         int IS_PRIMARY = 1;
     }
 
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-
-    @OnClick(R.id.go_to_sign_up)
-    public void goToSignUpActivity() {
-        Intent intent = new Intent(this, SignUpActivity.class);
-        startActivity(intent);
-    }
-
-    @OnClick(R.id.skip_login)
-    public void skipLogin() {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-    }
 }
 
