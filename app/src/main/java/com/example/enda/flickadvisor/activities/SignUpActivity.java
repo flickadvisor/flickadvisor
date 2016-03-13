@@ -30,10 +30,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.enda.flickadvisor.R;
-import com.example.enda.flickadvisor.models.User;
-import com.example.enda.flickadvisor.services.ApiServiceGenerator;
-import com.example.enda.flickadvisor.services.interfaces.UserApiService;
-import com.example.enda.flickadvisor.services.UserService;
+import com.example.enda.flickadvisor.models.UserTbl;
+import com.example.enda.flickadvisor.services.api.ApiServiceGenerator;
+import com.example.enda.flickadvisor.interfaces.UserApiService;
+import com.example.enda.flickadvisor.services.UserRealmService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -194,20 +194,20 @@ public class SignUpActivity extends AppCompatActivity implements LoaderCallbacks
 
             UserApiService userApiService = ApiServiceGenerator.createService(UserApiService.class);
 
-            Call<User> call = userApiService.createUser(new User(email, password));
+            Call<UserTbl> call = userApiService.createUser(new UserTbl(email, password));
             // make call to webservice
-            call.enqueue(new Callback<User>() {
+            call.enqueue(new Callback<UserTbl>() {
                 @Override
-                public void onResponse(Call<User> call, Response<User> response) {
+                public void onResponse(Call<UserTbl> call, Response<UserTbl> response) {
                     if (response.isSuccess()) {
-                        User user = response.body(); // get user from HTTP response
-                        UserService.saveUser(user);
+                        UserTbl user = response.body(); // get user from HTTP response
+                        UserRealmService.saveUser(user);
                     }
                     handleResponseCode(response.code());
                 }
 
                 @Override
-                public void onFailure(Call<User> call, Throwable t) {
+                public void onFailure(Call<UserTbl> call, Throwable t) {
                     Log.e(TAG_ACTIVITY, "Error: " + t.getMessage());
                     handleResponseCode(0);
                 }

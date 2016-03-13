@@ -3,15 +3,13 @@ package com.example.enda.flickadvisor.models;
 import java.util.Date;
 
 import io.realm.RealmObject;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Created by enda on 17/02/16.
  */
 public class UserSeries extends RealmObject {
     private Series series;
-    private User user;
+    private UserTbl user;
     private boolean onWatchList;
     private boolean onWatchedList;
     private boolean hidden;
@@ -28,11 +26,11 @@ public class UserSeries extends RealmObject {
         this.series = series;
     }
 
-    public User getUser() {
+    public UserTbl getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(UserTbl user) {
         this.user = user;
     }
 

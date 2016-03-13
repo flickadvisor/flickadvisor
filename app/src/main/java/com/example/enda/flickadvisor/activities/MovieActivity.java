@@ -18,16 +18,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.enda.flickadvisor.R;
+import com.example.enda.flickadvisor.interfaces.MovieApiService;
+import com.example.enda.flickadvisor.interfaces.TMDbMovieApiService;
 import com.example.enda.flickadvisor.models.Genre;
 import com.example.enda.flickadvisor.models.Movie;
 import com.example.enda.flickadvisor.models.MovieReview;
-import com.example.enda.flickadvisor.models.User;
+import com.example.enda.flickadvisor.models.UserTbl;
 import com.example.enda.flickadvisor.models.UserMovie;
-import com.example.enda.flickadvisor.services.ApiServiceGenerator;
-import com.example.enda.flickadvisor.services.TMDbServiceGenerator;
-import com.example.enda.flickadvisor.services.UserService;
-import com.example.enda.flickadvisor.services.interfaces.MovieApiService;
-import com.example.enda.flickadvisor.services.interfaces.TMDbMovieApiService;
+import com.example.enda.flickadvisor.services.UserRealmService;
+import com.example.enda.flickadvisor.services.api.ApiServiceGenerator;
+import com.example.enda.flickadvisor.services.api.TMDbServiceGenerator;
 import com.github.clans.fab.FloatingActionButton;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -48,12 +48,13 @@ public class MovieActivity extends AppCompatActivity {
 
     private static final String TAG_ACTIVITY = "MOVIE_ACTIVITY";
     private Movie movie;
-    private UserMovie userMovie;
-    private User user;
+    private UserMovie mUserMovie;
+    private UserTbl user;
     private Toolbar toolbar;
     // api service builders
     private TMDbMovieApiService tmbdMovieApiService;
     private MovieApiService movieApiService;
+    private boolean relationshipExists = false;
 
     // view bindings
     @Bind(R.id.movie_progress) View mProgressView;
@@ -76,7 +77,7 @@ public class MovieActivity extends AppCompatActivity {
         setContentView(R.layout.activity_movie);
         ButterKnife.bind(this);
 
-        user = UserService.getCurrentUser();
+        user = UserRealmService.getCurrentUser();
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -127,13 +128,14 @@ public class MovieActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<UserMovie> call, Response<UserMovie> response) {
                 if (response.isSuccess()) {
-                    userMovie = response.body();
+                    mUserMovie = response.body();
+                    relationshipExists = true;
                 } else {
-                    userMovie = new UserMovie(movie, user); // no relationship found, create new
+                    mUserMovie = new UserMovie(movie.getId(), user.getId()); // no relationship found, create new
                 }
-                setFabButtonSelectedState(mFavouriteButton, userMovie.isFavourite());
-                setFabButtonSelectedState(mSeenItButton, userMovie.isOnWatchedList());
-                setFabButtonSelectedState(mWatchLaterButton, userMovie.isOnWatchList());
+                setFabButtonSelectedState(mFavouriteButton, mUserMovie.isFavourite());
+                setFabButtonSelectedState(mSeenItButton, mUserMovie.isOnWatchedList());
+                setFabButtonSelectedState(mWatchLaterButton, mUserMovie.isOnWatchList());
             }
 
             @Override
@@ -244,7 +246,7 @@ public class MovieActivity extends AppCompatActivity {
                     getMovieReviews(movie.getId());
                     bindDataToView(movie);
 
-                    if (UserService.isLoggedIn()) {
+                    if (UserRealmService.isLoggedIn()) {
                         getUserMovieRelationship(movie.getId(), user.getId());
                     }
                 }
@@ -292,17 +294,19 @@ public class MovieActivity extends AppCompatActivity {
 
     @OnClick(R.id.fabFavourite)
     public void onClickFavourite() {
-        if (UserService.isLoggedIn()) {
-            boolean newState = !userMovie.isFavourite();
+        if (UserRealmService.isLoggedIn()) {
+            boolean newState = !mUserMovie.isFavourite();
 
-            userMovie.setIsFavourite(newState);
+            mUserMovie.setIsFavourite(newState);
 
             setFabButtonSelectedState(mFavouriteButton, newState);
 
             if (newState) {
                 setFabButtonSelectedState(mSeenItButton, true);
-                userMovie.setIsOnWatchedList(true);
+                mUserMovie.setIsOnWatchedList(true);
             }
+
+            updateUserMovie(mUserMovie);
 
         } else {
             signInToast();
@@ -319,16 +323,18 @@ public class MovieActivity extends AppCompatActivity {
 
     @OnClick(R.id.fabSeenIt)
     public void onClickAddToSeenIt() {
-        if (UserService.isLoggedIn()) {
-            boolean newState = !userMovie.isOnWatchedList();
+        if (UserRealmService.isLoggedIn()) {
+            boolean newState = !mUserMovie.isOnWatchedList();
 
-            userMovie.setIsOnWatchedList(newState);
+            mUserMovie.setIsOnWatchedList(newState);
             setFabButtonSelectedState(mSeenItButton, newState);
 
             if (!newState) {
-                userMovie.setIsFavourite(false);
+                mUserMovie.setIsFavourite(false);
                 setFabButtonSelectedState(mFavouriteButton, false);
             }
+
+            updateUserMovie(mUserMovie);
 
         } else {
             signInToast();
@@ -337,14 +343,50 @@ public class MovieActivity extends AppCompatActivity {
 
     @OnClick(R.id.fabWatchLater)
     public void onClickAddToWatchLater() {
-        if (UserService.isLoggedIn()) {
-            boolean newState = !userMovie.isOnWatchList();
+        if (UserRealmService.isLoggedIn()) {
+            boolean newState = !mUserMovie.isOnWatchList();
 
-            userMovie.setIsOnWatchList(newState);
+            mUserMovie.setIsOnWatchList(newState);
             setFabButtonSelectedState(mWatchLaterButton, newState);
+
+            updateUserMovie(mUserMovie);
         } else {
             signInToast();
         }
     }
 
+    private void updateUserMovie(final UserMovie userMovie) {
+        if (relationshipExists) { // update
+            Call<UserMovie> call = movieApiService.updateUserMovie(userMovie);
+            call.enqueue(new Callback<UserMovie>() {
+                @Override
+                public void onResponse(Call<UserMovie> call, Response<UserMovie> response) {
+                    if (response.isSuccess()) {
+                        mUserMovie = response.body();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<UserMovie> call, Throwable t) {
+                    Log.e(TAG_ACTIVITY, t.getLocalizedMessage());
+                }
+            });
+        } else {
+            Call<UserMovie> call = movieApiService.createUserMovie(userMovie);
+            call.enqueue(new Callback<UserMovie>() {
+                @Override
+                public void onResponse(Call<UserMovie> call, Response<UserMovie> response) {
+                    if (response.isSuccess()) {
+                        mUserMovie = response.body();
+                    }
+                    Log.d(TAG_ACTIVITY, response.message());
+                }
+
+                @Override
+                public void onFailure(Call<UserMovie> call, Throwable t) {
+                    Log.e(TAG_ACTIVITY, t.getLocalizedMessage());
+                }
+            });
+        }
+    }
 }

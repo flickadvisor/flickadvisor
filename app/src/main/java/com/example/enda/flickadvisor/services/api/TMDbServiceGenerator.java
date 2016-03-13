@@ -1,4 +1,4 @@
-package com.example.enda.flickadvisor.services;
+package com.example.enda.flickadvisor.services.api;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;

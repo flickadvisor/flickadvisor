@@ -12,9 +12,8 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
 /**
- * Created by enda on 17/02/16.
+ * Created by enda on 12/03/16.
  */
-//@Parcel(value = Parcel.Serialization.BEAN, analyze = { Movie.class })
 public class Movie extends RealmObject {
     @PrimaryKey
     private Long id;
@@ -40,7 +39,7 @@ public class Movie extends RealmObject {
     public Movie(JsonObject json) {
         this.id = json.get("id").getAsLong();
         this.title = json.get("original_title").getAsString();
-        this.imdbId = json.get("imdb_id").getAsString();
+        this.imdbId = json.get("imdb_id") == null ? null : json.get("imdb_id").getAsString();
 //        this.language = json.get("original_language").getAsString();
         this.language = json.get("spoken_languages").getAsJsonArray().get(0).getAsJsonObject().get("name").getAsString();
         this.adult = json.get("adult").getAsBoolean();

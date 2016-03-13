@@ -3,13 +3,16 @@ package com.example.enda.flickadvisor.models;
 import java.util.Date;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by enda on 17/02/16.
  */
 public class UserMovie extends RealmObject {
-    private Movie movie;
-    private User user;
+    @PrimaryKey
+    private long id;
+    private long movieId;
+    private long userId;
     private boolean isOnWatchList;
     private boolean isOnWatchedList;
     private boolean isHidden;
@@ -19,30 +22,37 @@ public class UserMovie extends RealmObject {
     public UserMovie() {
     }
 
-    public UserMovie(Movie movie, User user) {
-        this.movie = movie;
-        this.user = user;
+    public UserMovie(long movieId, long userId) {
+        this.movieId = movieId;
+        this.userId = userId;
         this.isOnWatchList = false;
         this.isOnWatchedList = false;
         this.isOnWatchList = false;
         this.isFavourite = false;
-        this.dateAdded = new Date(System.currentTimeMillis());
     }
 
-    public Movie getMovie() {
-        return movie;
+    public long getId() {
+        return id;
     }
 
-    public void setMovie(Movie movie) {
-        this.movie = movie;
+    public void setId(long id) {
+        this.id = id;
     }
 
-    public User getUser() {
-        return user;
+    public long getMovieId() {
+        return movieId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setMovieId(long movieId) {
+        this.movieId = movieId;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 
     public boolean isOnWatchList() {

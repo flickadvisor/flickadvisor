@@ -1,4 +1,4 @@
-package com.example.enda.flickadvisor.services;
+package com.example.enda.flickadvisor.services.api;
 
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;

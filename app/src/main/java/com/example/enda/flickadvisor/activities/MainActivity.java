@@ -19,7 +19,7 @@ import android.widget.Toast;
 
 import com.example.enda.flickadvisor.R;
 import com.example.enda.flickadvisor.fragments.BrowseFragment;
-import com.example.enda.flickadvisor.services.UserService;
+import com.example.enda.flickadvisor.services.UserRealmService;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity
         Menu nav = navigationView.getMenu();
         nav.findItem(R.id.nav_browse).setChecked(true);
 
-        setMenuAccountSectionState(nav, UserService.isLoggedIn());
+        setMenuAccountSectionState(nav, UserRealmService.isLoggedIn());
     }
 
     private void setMenuAccountSectionState(Menu nav, boolean isLoggedIn) {
@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity
 
         MenuItem signOut = menu.findItem(R.id.action_logout);
 
-        if (!UserService.isLoggedIn()) {
+        if (!UserRealmService.isLoggedIn()) {
             signOut.setVisible(false);
         }
         return true;
@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                UserService.logout();
+                UserRealmService.logout();
                 Toast.makeText(getApplicationContext(), "Signed out.", Toast.LENGTH_LONG).show();
                 finish();
             }

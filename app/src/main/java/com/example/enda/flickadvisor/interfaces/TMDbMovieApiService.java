@@ -1,4 +1,4 @@
-package com.example.enda.flickadvisor.services.interfaces;
+package com.example.enda.flickadvisor.interfaces;
 
 import com.google.gson.JsonObject;
 

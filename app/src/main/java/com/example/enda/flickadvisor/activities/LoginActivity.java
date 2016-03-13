@@ -31,10 +31,10 @@ import android.widget.Toast;
 
 import com.example.enda.flickadvisor.R;
 import com.example.enda.flickadvisor.models.Credentials;
-import com.example.enda.flickadvisor.models.User;
-import com.example.enda.flickadvisor.services.ApiServiceGenerator;
-import com.example.enda.flickadvisor.services.UserService;
-import com.example.enda.flickadvisor.services.interfaces.UserApiService;
+import com.example.enda.flickadvisor.models.UserTbl;
+import com.example.enda.flickadvisor.services.api.ApiServiceGenerator;
+import com.example.enda.flickadvisor.services.UserRealmService;
+import com.example.enda.flickadvisor.interfaces.UserApiService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -192,21 +192,21 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             UserApiService userApiService = ApiServiceGenerator.createService(UserApiService.class);
 
-            Call<User> call = userApiService.login(new Credentials(email, password));
+            Call<UserTbl> call = userApiService.login(new Credentials(email, password));
             // make call to webservice
-            call.enqueue(new Callback<User>() {
+            call.enqueue(new Callback<UserTbl>() {
                 @Override
-                public void onResponse(Call<User> call, Response<User> response) {
+                public void onResponse(Call<UserTbl> call, Response<UserTbl> response) {
                     if (response.isSuccess()) {
-                        User user = response.body(); // get user from HTTP response
-                        UserService.saveUser(user);
+                        UserTbl user = response.body(); // get user from HTTP response
+                        UserRealmService.saveUser(user);
                         success();
                     }
                     handleResponseCode(response.code());
                 }
 
                 @Override
-                public void onFailure(Call<User> call, Throwable t) {
+                public void onFailure(Call<UserTbl> call, Throwable t) {
                     Log.e(TAG_ACTIVITY, "Error: " + t.getMessage());
                     handleResponseCode(0);
                 }

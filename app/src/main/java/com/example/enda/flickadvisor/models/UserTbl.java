@@ -1,36 +1,32 @@
 package com.example.enda.flickadvisor.models;
 
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Created by enda on 17/02/16.
  */
-public class User extends RealmObject {
+public class UserTbl extends RealmObject {
     @PrimaryKey
     private Long id;
+    private String name;
     @Required
     private String email;
+    @Ignore
     private String password;
-    private String name;
 
-    public User() {
+    public UserTbl() {
     }
 
-    public User(String email, String password) {
+    public UserTbl(String email, String password) {
         this.email = email;
         this.password = password;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+    public UserTbl(String email) {
+        this.email = email;
     }
 
     public Long getId() {
@@ -39,6 +35,14 @@ public class User extends RealmObject {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getEmail() {
@@ -56,4 +60,5 @@ public class User extends RealmObject {
     public void setName(String name) {
         this.name = name;
     }
+
 }

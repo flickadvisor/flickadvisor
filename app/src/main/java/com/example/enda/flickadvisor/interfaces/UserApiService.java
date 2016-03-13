@@ -1,7 +1,7 @@
-package com.example.enda.flickadvisor.services.interfaces;
+package com.example.enda.flickadvisor.interfaces;
 
 import com.example.enda.flickadvisor.models.Credentials;
-import com.example.enda.flickadvisor.models.User;
+import com.example.enda.flickadvisor.models.UserTbl;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -12,7 +12,7 @@ import retrofit2.http.POST;
  */
 public interface UserApiService {
     @POST("users/new")
-    Call<User> createUser(@Body User user);
+    Call<UserTbl> createUser(@Body UserTbl user);
     @POST("users/login")
-    Call<User> login(@Body Credentials credentials);
+    Call<UserTbl> login(@Body Credentials credentials);
 }
