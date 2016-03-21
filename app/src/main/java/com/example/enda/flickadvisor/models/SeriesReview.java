@@ -2,8 +2,6 @@ package com.example.enda.flickadvisor.models;
 
 import org.parceler.Parcel;
 
-import java.util.Date;
-
 import io.realm.RealmObject;
 import io.realm.SeriesReviewRealmProxy;
 import io.realm.annotations.PrimaryKey;
@@ -19,7 +17,9 @@ public class SeriesReview extends RealmObject {
     private Long id;
     private float rating;
     private String description;
-    private Date date;
+    private long date;
+    private UserTbl user;
+    private Long seriesId;
 
     public SeriesReview() {
     }
@@ -48,11 +48,27 @@ public class SeriesReview extends RealmObject {
         this.description = description;
     }
 
-    public Date getDate() {
+    public long getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(long date) {
         this.date = date;
+    }
+
+    public UserTbl getUser() {
+        return user;
+    }
+
+    public void setUser(UserTbl user) {
+        this.user = user;
+    }
+
+    public Long getSeriesId() {
+        return seriesId;
+    }
+
+    public void setSeriesId(Long seriesId) {
+        this.seriesId = seriesId;
     }
 }

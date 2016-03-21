@@ -6,6 +6,7 @@ import java.util.Date;
 
 import io.realm.RealmObject;
 import io.realm.UserSeriesRealmProxy;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by enda on 17/02/16.
@@ -14,22 +15,38 @@ import io.realm.UserSeriesRealmProxy;
         value = Parcel.Serialization.BEAN,
         analyze = UserSeries.class)
 public class UserSeries extends RealmObject {
-    private Series series;
+    @PrimaryKey
+    private Long id;
+    private long seriesId;
     private UserTbl user;
-    private boolean onWatchList;
-    private boolean onWatchedList;
-    private boolean hidden;
+    private boolean isOnWatchList;
+    private boolean isOnWatchedList;
+    private boolean isHidden;
+    private boolean isFavourite;
     private Date dateAdded;
 
     public UserSeries() {
     }
 
-    public Series getSeries() {
-        return series;
+    public UserSeries(long seriesId, UserTbl user) {
+        this.seriesId = seriesId;
+        this.user = user;
     }
 
-    public void setSeries(Series series) {
-        this.series = series;
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public long getSeriesId() {
+        return seriesId;
+    }
+
+    public void setSeriesId(long seriesId) {
+        this.seriesId = seriesId;
     }
 
     public UserTbl getUser() {
@@ -41,27 +58,35 @@ public class UserSeries extends RealmObject {
     }
 
     public boolean isOnWatchList() {
-        return onWatchList;
+        return isOnWatchList;
     }
 
-    public void setOnWatchList(boolean onWatchList) {
-        this.onWatchList = onWatchList;
+    public void setIsOnWatchList(boolean isOnWatchList) {
+        this.isOnWatchList = isOnWatchList;
     }
 
     public boolean isOnWatchedList() {
-        return onWatchedList;
+        return isOnWatchedList;
     }
 
-    public void setOnWatchedList(boolean onWatchedList) {
-        this.onWatchedList = onWatchedList;
+    public void setIsOnWatchedList(boolean isOnWatchedList) {
+        this.isOnWatchedList = isOnWatchedList;
     }
 
     public boolean isHidden() {
-        return hidden;
+        return isHidden;
     }
 
-    public void setHidden(boolean hidden) {
-        this.hidden = hidden;
+    public void setIsHidden(boolean isHidden) {
+        this.isHidden = isHidden;
+    }
+
+    public boolean isFavourite() {
+        return isFavourite;
+    }
+
+    public void setIsFavourite(boolean isFavourite) {
+        this.isFavourite = isFavourite;
     }
 
     public Date getDateAdded() {

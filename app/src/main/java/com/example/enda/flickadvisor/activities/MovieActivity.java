@@ -47,7 +47,7 @@ import retrofit2.Response;
 
 public class MovieActivity extends AppCompatActivity implements ReviewDialogFragment.OnAddReviewListener {
 
-    private static final String TAG_ACTIVITY = "MOVIE_ACTIVITY";
+    private String TAG_ACTIVITY = this.toString();
     private Movie movie;
     private UserMovie mUserMovie;
     private UserTbl user;
@@ -120,7 +120,7 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
             @Override
             public void onFailure(Call<RealmList<MovieReview>> call, Throwable t) {
                 addRatingStarsToLayout(movie.getVoteAverage() / 2);
-                Log.d(TAG_ACTIVITY, t.getMessage());
+                Log.d(TAG_ACTIVITY, "Failed to get movies reviews.");
             }
         });
     }
@@ -134,7 +134,7 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
                     mUserMovie = response.body();
                     relationshipExists = true;
                 } else {
-                    mUserMovie = new UserMovie(movie.getId(), user.getId()); // no relationship found, create new
+                    mUserMovie = new UserMovie(movie.getId(), user); // no relationship found, create new
                 }
                 setFabButtonSelectedState(mFavouriteButton, mUserMovie.isFavourite());
                 setFabButtonSelectedState(mSeenItButton, mUserMovie.isOnWatchedList());
@@ -418,7 +418,7 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
 
                 @Override
                 public void onFailure(Call<MovieReview> call, Throwable t) {
-                    Log.d(TAG_ACTIVITY, t.getLocalizedMessage());
+                    Log.d(TAG_ACTIVITY, "Failed.");
                 }
             });
         }

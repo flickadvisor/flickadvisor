@@ -18,7 +18,7 @@ public class UserMovie extends RealmObject {
     @PrimaryKey
     private long id;
     private long movieId;
-    private long userId;
+    private UserTbl user;
     private boolean isOnWatchList;
     private boolean isOnWatchedList;
     private boolean isHidden;
@@ -28,9 +28,9 @@ public class UserMovie extends RealmObject {
     public UserMovie() {
     }
 
-    public UserMovie(long movieId, long userId) {
+    public UserMovie(long movieId, UserTbl user) {
         this.movieId = movieId;
-        this.userId = userId;
+        this.user = user;
         this.isOnWatchList = false;
         this.isOnWatchedList = false;
         this.isOnWatchList = false;
@@ -53,12 +53,12 @@ public class UserMovie extends RealmObject {
         this.movieId = movieId;
     }
 
-    public long getUserId() {
-        return userId;
+    public UserTbl getUser() {
+        return user;
     }
 
-    public void setUserId(long userId) {
-        this.userId = userId;
+    public void setUser(UserTbl user) {
+        this.user = user;
     }
 
     public boolean isOnWatchList() {

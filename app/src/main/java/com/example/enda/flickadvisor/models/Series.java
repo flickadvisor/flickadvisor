@@ -1,6 +1,10 @@
 package com.example.enda.flickadvisor.models;
 
+import com.example.enda.flickadvisor.util.GenreListConverter;
+import com.example.enda.flickadvisor.util.SeriesReviewListConverter;
+
 import org.parceler.Parcel;
+import org.parceler.ParcelPropertyConverter;
 
 import java.util.Date;
 
@@ -162,6 +166,7 @@ public class Series extends RealmObject {
         return reviews;
     }
 
+    @ParcelPropertyConverter(SeriesReviewListConverter.class)
     public void setReviews(RealmList<SeriesReview> reviews) {
         this.reviews = reviews;
     }
@@ -170,6 +175,7 @@ public class Series extends RealmObject {
         return genres;
     }
 
+    @ParcelPropertyConverter(GenreListConverter.class)
     public void setGenres(RealmList<Genre> genres) {
         this.genres = genres;
     }
