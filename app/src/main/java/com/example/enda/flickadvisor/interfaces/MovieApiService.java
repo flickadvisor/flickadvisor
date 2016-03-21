@@ -24,4 +24,6 @@ public interface MovieApiService {
     Call<UserMovie> createUserMovie(@Body UserMovie userMovie);
     @PUT(value = "movies/user_movie/update")
     Call<UserMovie> updateUserMovie(@Body UserMovie userMovie);
+    @POST(value = "movies/reviews/create")
+    Call<MovieReview> createMovieReview(@Body MovieReview review);
 }

@@ -1,16 +1,20 @@
 package com.example.enda.flickadvisor.models;
 
+import org.parceler.Parcel;
+
 import java.util.Date;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.SeriesRealmProxy;
 import io.realm.annotations.PrimaryKey;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Created by enda on 17/02/16.
  */
+@Parcel(implementations = { SeriesRealmProxy.class },
+        value = Parcel.Serialization.BEAN,
+        analyze = Series.class)
 public class Series extends RealmObject {
     @PrimaryKey
     private Long id;

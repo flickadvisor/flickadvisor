@@ -1,6 +1,9 @@
 package com.example.enda.flickadvisor.models;
 
+import org.parceler.Parcel;
+
 import io.realm.RealmObject;
+import io.realm.UserTblRealmProxy;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
@@ -8,6 +11,9 @@ import io.realm.annotations.Required;
 /**
  * Created by enda on 17/02/16.
  */
+@Parcel(implementations = { UserTblRealmProxy.class },
+        value = Parcel.Serialization.BEAN,
+        analyze = UserTbl.class)
 public class UserTbl extends RealmObject {
     @PrimaryKey
     private Long id;

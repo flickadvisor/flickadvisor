@@ -18,13 +18,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.enda.flickadvisor.R;
+import com.example.enda.flickadvisor.fragments.ReviewDialogFragment;
 import com.example.enda.flickadvisor.interfaces.MovieApiService;
 import com.example.enda.flickadvisor.interfaces.TMDbMovieApiService;
 import com.example.enda.flickadvisor.models.Genre;
 import com.example.enda.flickadvisor.models.Movie;
 import com.example.enda.flickadvisor.models.MovieReview;
-import com.example.enda.flickadvisor.models.UserTbl;
 import com.example.enda.flickadvisor.models.UserMovie;
+import com.example.enda.flickadvisor.models.UserTbl;
 import com.example.enda.flickadvisor.services.UserRealmService;
 import com.example.enda.flickadvisor.services.api.ApiServiceGenerator;
 import com.example.enda.flickadvisor.services.api.TMDbServiceGenerator;
@@ -44,16 +45,18 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MovieActivity extends AppCompatActivity {
+public class MovieActivity extends AppCompatActivity implements ReviewDialogFragment.OnAddReviewListener {
 
     private static final String TAG_ACTIVITY = "MOVIE_ACTIVITY";
     private Movie movie;
     private UserMovie mUserMovie;
     private UserTbl user;
     private Toolbar toolbar;
+    private ReviewDialogFragment reviewDialog;
     // api service builders
     private TMDbMovieApiService tmbdMovieApiService;
     private MovieApiService movieApiService;
+
     private boolean relationshipExists = false;
 
     // view bindings
@@ -175,7 +178,7 @@ public class MovieActivity extends AppCompatActivity {
         for (float i = 0; i < averageRating; i++) {
             Drawable drawable;
             if (averageRating - i >= 0.25 && averageRating - i <= 0.75) {
-                drawable = ContextCompat.getDrawable(this, R.drawable.ic_star_half_24dp);
+                drawable = ContextCompat.getDrawable(this, R.drawable.ic_star_ratingbar_half);
             } else {
                 drawable = ContextCompat.getDrawable(this, R.drawable.ic_star_24dp);
             }
@@ -319,7 +322,10 @@ public class MovieActivity extends AppCompatActivity {
 
     @OnClick(R.id.fabRate)
     public void onClickRate() {
+        reviewDialog = ReviewDialogFragment.newInstance();
+        reviewDialog.show(getFragmentManager(), "ReviewDialogFragment");
     }
+
 
     @OnClick(R.id.fabSeenIt)
     public void onClickAddToSeenIt() {
@@ -356,35 +362,63 @@ public class MovieActivity extends AppCompatActivity {
     }
 
     private void updateUserMovie(final UserMovie userMovie) {
-        if (relationshipExists) { // update
-            Call<UserMovie> call = movieApiService.updateUserMovie(userMovie);
-            call.enqueue(new Callback<UserMovie>() {
+        if (userMovie != null) {
+            if (relationshipExists) { // update
+                Call<UserMovie> call = movieApiService.updateUserMovie(userMovie);
+                call.enqueue(new Callback<UserMovie>() {
+                    @Override
+                    public void onResponse(Call<UserMovie> call, Response<UserMovie> response) {
+                        if (response.isSuccess()) {
+                            mUserMovie = response.body();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<UserMovie> call, Throwable t) {
+                        Log.e(TAG_ACTIVITY, t.getLocalizedMessage());
+                    }
+                });
+            } else {
+                Call<UserMovie> call = movieApiService.createUserMovie(userMovie);
+                call.enqueue(new Callback<UserMovie>() {
+                    @Override
+                    public void onResponse(Call<UserMovie> call, Response<UserMovie> response) {
+                        if (response.isSuccess()) {
+                            mUserMovie = response.body();
+                        }
+                        Log.d(TAG_ACTIVITY, response.message());
+                    }
+
+                    @Override
+                    public void onFailure(Call<UserMovie> call, Throwable t) {
+                        Log.e(TAG_ACTIVITY, t.getLocalizedMessage());
+                    }
+                });
+            }
+        }
+    }
+
+    @Override
+    public void onFinishReview(float rating, String description) {
+        MovieReview review = new MovieReview(user, movie.getId(), rating, description);
+        reviewDialog.dismiss(); // close review dialog after getting the data
+        addMovieReview(review);
+    }
+
+    private void addMovieReview(MovieReview review) {
+        if (review != null) {
+            Call<MovieReview> call = movieApiService.createMovieReview(review);
+            call.enqueue(new Callback<MovieReview>() {
                 @Override
-                public void onResponse(Call<UserMovie> call, Response<UserMovie> response) {
+                public void onResponse(Call<MovieReview> call, Response<MovieReview> response) {
                     if (response.isSuccess()) {
-                        mUserMovie = response.body();
+                        Log.d(TAG_ACTIVITY, "TEST");
                     }
                 }
 
                 @Override
-                public void onFailure(Call<UserMovie> call, Throwable t) {
-                    Log.e(TAG_ACTIVITY, t.getLocalizedMessage());
-                }
-            });
-        } else {
-            Call<UserMovie> call = movieApiService.createUserMovie(userMovie);
-            call.enqueue(new Callback<UserMovie>() {
-                @Override
-                public void onResponse(Call<UserMovie> call, Response<UserMovie> response) {
-                    if (response.isSuccess()) {
-                        mUserMovie = response.body();
-                    }
-                    Log.d(TAG_ACTIVITY, response.message());
-                }
-
-                @Override
-                public void onFailure(Call<UserMovie> call, Throwable t) {
-                    Log.e(TAG_ACTIVITY, t.getLocalizedMessage());
+                public void onFailure(Call<MovieReview> call, Throwable t) {
+                    Log.d(TAG_ACTIVITY, t.getLocalizedMessage());
                 }
             });
         }

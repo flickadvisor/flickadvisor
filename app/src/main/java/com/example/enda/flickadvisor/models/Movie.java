@@ -2,6 +2,8 @@ package com.example.enda.flickadvisor.models;
 
 import com.google.gson.JsonObject;
 
+import org.parceler.Parcel;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -14,6 +16,9 @@ import io.realm.annotations.PrimaryKey;
 /**
  * Created by enda on 12/03/16.
  */
+@Parcel(implementations = { Movie.class },
+        value = Parcel.Serialization.BEAN,
+        analyze = Movie.class)
 public class Movie extends RealmObject {
     @PrimaryKey
     private Long id;

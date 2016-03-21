@@ -10,5 +10,5 @@
     <color name="colorTextLight">#F5F5F5</color>
     <color name="colorTextDark">#000000</color>
     <color name="colorTextDarkSecondary">#757575</color>
-    <color name="colorStar">#FFC107</color>
+    <color name="colorStar">#FBC02D</color>
 </resources>

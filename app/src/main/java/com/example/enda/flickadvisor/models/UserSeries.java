@@ -1,12 +1,18 @@
 package com.example.enda.flickadvisor.models;
 
+import org.parceler.Parcel;
+
 import java.util.Date;
 
 import io.realm.RealmObject;
+import io.realm.UserSeriesRealmProxy;
 
 /**
  * Created by enda on 17/02/16.
  */
+@Parcel(implementations = { UserSeriesRealmProxy.class },
+        value = Parcel.Serialization.BEAN,
+        analyze = UserSeries.class)
 public class UserSeries extends RealmObject {
     private Series series;
     private UserTbl user;

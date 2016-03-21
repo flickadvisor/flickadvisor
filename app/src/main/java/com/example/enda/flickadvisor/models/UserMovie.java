@@ -1,13 +1,19 @@
 package com.example.enda.flickadvisor.models;
 
+import org.parceler.Parcel;
+
 import java.util.Date;
 
 import io.realm.RealmObject;
+import io.realm.UserMovieRealmProxy;
 import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by enda on 17/02/16.
  */
+@Parcel(implementations = { UserMovieRealmProxy.class },
+        value = Parcel.Serialization.BEAN,
+        analyze = UserMovie.class)
 public class UserMovie extends RealmObject {
     @PrimaryKey
     private long id;

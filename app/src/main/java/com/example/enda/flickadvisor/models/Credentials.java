@@ -1,34 +1,20 @@
 package com.example.enda.flickadvisor.models;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
- * Created by enda on 19/02/16.
+ * Created by enda on 21/03/16.
  */
 public class Credentials {
-
-    private String email;
-    private String password;
+    @Getter @Setter private String email;
+    @Getter @Setter private String password;
 
     public Credentials() {
     }
 
     public Credentials(String email, String password) {
         this.email = email;
-        this.password = password;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
         this.password = password;
     }
 }

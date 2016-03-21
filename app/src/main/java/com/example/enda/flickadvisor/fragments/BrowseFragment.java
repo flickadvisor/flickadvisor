@@ -67,7 +67,7 @@ public class BrowseFragment extends Fragment {
         Calendar calOne = Calendar.getInstance();
         Calendar calTwo = Calendar.getInstance();
 
-        calOne.add(Calendar.MONTH, -1); // tow weeks ago
+        calOne.add(Calendar.MONTH, -1);
 
         Call<JsonObject> call = movieApiService.releasedBetween(
                 getFormattedDate(calOne.getTime()),

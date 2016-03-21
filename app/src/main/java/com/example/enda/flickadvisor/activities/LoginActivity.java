@@ -30,7 +30,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.enda.flickadvisor.R;
-import com.example.enda.flickadvisor.models.Credentials;
 import com.example.enda.flickadvisor.models.UserTbl;
 import com.example.enda.flickadvisor.services.api.ApiServiceGenerator;
 import com.example.enda.flickadvisor.services.UserRealmService;

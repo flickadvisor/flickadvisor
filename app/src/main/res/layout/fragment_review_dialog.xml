@@ -1,0 +1,60 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:minWidth="800dp"
+    android:layout_width="800dp"
+    android:layout_height="wrap_content"
+    android:paddingTop="20dp"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    tools:context="com.example.enda.flickadvisor.fragments.ReviewDialogFragment">
+
+    <RatingBar
+        android:paddingBottom="36dp"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/ratingBar"
+        android:progressTint="@color/colorStar"
+        android:secondaryProgressTint="@color/colorStar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:numStars="5"
+        android:stepSize="1.0"
+        android:rating="0.0" />
+
+    <EditText
+        android:hint="Description"
+        android:paddingBottom="10dp"
+        android:id="@+id/reviewDescription"
+        android:layout_below="@id/ratingBar"
+        android:inputType="textMultiLine"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_alignParentEnd="true"
+        android:orientation="horizontal"
+        android:layout_below="@id/reviewDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:textColor="@color/colorAccent"
+            android:layout_weight=".2"
+            android:id="@+id/btnCancelReview"
+            style="?android:attr/borderlessButtonStyle"
+            android:text="Cancel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:textColor="@color/colorAccent"
+            android:layout_weight=".2"
+            android:id="@+id/btnSaveReview"
+            style="?android:attr/borderlessButtonStyle"
+            android:text="Save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+</RelativeLayout>
