@@ -1,20 +1,7 @@
 package com.example.enda.flickadvisor.services.api;
 
-import com.example.enda.flickadvisor.models.Genre;
-import com.example.enda.flickadvisor.models.Movie;
-import com.example.enda.flickadvisor.models.MovieReview;
-import com.example.enda.flickadvisor.models.Series;
-import com.example.enda.flickadvisor.models.SeriesReview;
-import com.example.enda.flickadvisor.models.UserMovie;
-import com.example.enda.flickadvisor.models.UserSeries;
 import com.example.enda.flickadvisor.models.UserTbl;
-import com.example.enda.flickadvisor.util.GenreSerializer;
-import com.example.enda.flickadvisor.util.MovieReviewSerializer;
-import com.example.enda.flickadvisor.util.MovieSerializer;
-import com.example.enda.flickadvisor.util.SeriesSerializer;
-import com.example.enda.flickadvisor.util.UserMovieSerializer;
 import com.example.enda.flickadvisor.util.UserSerializer;
-import com.example.enda.flickadvisor.util.UserSeriesSerializer;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -44,6 +31,7 @@ public class ApiServiceGenerator {
     private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 
     private static Gson gson = new GsonBuilder()
+
             .setExclusionStrategies(new ExclusionStrategy() {
                 @Override
                 public boolean shouldSkipField(FieldAttributes f) {
@@ -55,14 +43,14 @@ public class ApiServiceGenerator {
                     return false;
                 }
             })
-            .registerTypeAdapter(Movie.class, new MovieSerializer())
-            .registerTypeAdapter(MovieReview.class, new MovieReviewSerializer())
-            .registerTypeAdapter(Genre.class, new GenreSerializer())
+//            .registerTypeAdapter(Movie.class, new MovieSerializer())
+//            .registerTypeAdapter(MovieReview.class, new MovieReviewSerializer())
+//            .registerTypeAdapter(Genre.class, new GenreSerializer())
             .registerTypeAdapter(UserTbl.class, new UserSerializer())
-            .registerTypeAdapter(Series.class, new SeriesSerializer())
-            .registerTypeAdapter(SeriesReview.class, new SeriesReviewSerializer())
-            .registerTypeAdapter(UserMovie.class, new UserMovieSerializer())
-            .registerTypeAdapter(UserSeries.class, new UserSeriesSerializer())
+//            .registerTypeAdapter(Series.class, new SeriesSerializer())
+//            .registerTypeAdapter(SeriesReview.class, new SeriesReviewSerializer())
+//            .registerTypeAdapter(UserMovie.class, new UserMovieSerializer())
+//            .registerTypeAdapter(UserSeries.class, new UserSeriesSerializer())
             .create();
 
     private static Retrofit.Builder builder =

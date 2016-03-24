@@ -4,7 +4,6 @@ import org.parceler.Parcel;
 
 import io.realm.RealmObject;
 import io.realm.UserTblRealmProxy;
-import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
@@ -20,7 +19,6 @@ public class UserTbl extends RealmObject {
     private String name;
     @Required
     private String email;
-    @Ignore
     private String password;
 
     public UserTbl() {

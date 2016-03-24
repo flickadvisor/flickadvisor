@@ -25,12 +25,20 @@ public class MovieReview extends RealmObject {
     public MovieReview() {
     }
 
-    public MovieReview(UserTbl user, long movieId, float rating, String description) {
+    public MovieReview(long movieId, UserTbl user) {
         this.user = user;
         this.movieId = movieId;
+        this.description = null;
+        this.rating = 0F;
+    }
+
+    public MovieReview(long movieId, UserTbl user, float rating, String description) {
+        this.movieId = movieId;
+        this.user = user;
         this.rating = rating;
         this.description = description;
     }
+
 
     public Long getId() {
         return id;

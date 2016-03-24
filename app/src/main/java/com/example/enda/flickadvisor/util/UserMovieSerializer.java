@@ -17,7 +17,7 @@ public class UserMovieSerializer implements JsonSerializer<UserMovie> {
         final JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("id", src.getId());
         jsonObject.addProperty("movieId", src.getMovieId());
-        jsonObject.addProperty("user", String.valueOf(src.getUser()));
+        jsonObject.addProperty("user", String.valueOf(context.serialize(src.getUser())));
         jsonObject.addProperty("isOnWatchList", src.isOnWatchList());
         jsonObject.addProperty("isOnWatchedList", src.isOnWatchedList());
         jsonObject.addProperty("isHidden", src.isHidden());

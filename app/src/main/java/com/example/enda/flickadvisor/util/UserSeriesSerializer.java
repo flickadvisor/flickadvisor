@@ -17,7 +17,7 @@ public class UserSeriesSerializer implements JsonSerializer<UserSeries> {
         final JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("id", src.getId());
         jsonObject.addProperty("seriesId", src.getSeriesId());
-        jsonObject.addProperty("user", String.valueOf(src.getUser()));
+//        jsonObject.addProperty("user", new Gson().toJson(src.getUser()));
         jsonObject.addProperty("isOnWatchList", src.isOnWatchList());
         jsonObject.addProperty("isOnWatchedList", src.isOnWatchedList());
         jsonObject.addProperty("isHidden", src.isHidden());

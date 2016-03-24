@@ -21,6 +21,7 @@ import com.example.enda.flickadvisor.R;
 import com.example.enda.flickadvisor.fragments.ReviewDialogFragment;
 import com.example.enda.flickadvisor.interfaces.MovieApiService;
 import com.example.enda.flickadvisor.interfaces.TMDbMovieApiService;
+import com.example.enda.flickadvisor.interfaces.UserApiService;
 import com.example.enda.flickadvisor.models.Genre;
 import com.example.enda.flickadvisor.models.Movie;
 import com.example.enda.flickadvisor.models.MovieReview;
@@ -36,6 +37,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Objects;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -47,6 +49,7 @@ import retrofit2.Response;
 
 public class MovieActivity extends AppCompatActivity implements ReviewDialogFragment.OnAddReviewListener {
 
+    //region Globals
     private String TAG_ACTIVITY = this.toString();
     private Movie movie;
     private UserMovie mUserMovie;
@@ -56,6 +59,7 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
     // api service builders
     private TMDbMovieApiService tmbdMovieApiService;
     private MovieApiService movieApiService;
+    private UserApiService userApiService;
 
     private boolean relationshipExists = false;
 
@@ -73,6 +77,7 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
     @Bind(R.id.fabWatchLater) FloatingActionButton mWatchLaterButton;
     @Bind(R.id.fabSeenIt) FloatingActionButton mSeenItButton;
     @Bind(R.id.fabFavourite) FloatingActionButton mFavouriteButton;
+    //endregion
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +99,8 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
                 TMDbServiceGenerator.createService(TMDbMovieApiService.class);
         movieApiService =
                 ApiServiceGenerator.createService(MovieApiService.class);
+        userApiService =
+                ApiServiceGenerator.createService(UserApiService.class);
 
         if (movieId != 0L) {
             getMovieWithId(movieId);
@@ -120,20 +127,21 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
             @Override
             public void onFailure(Call<RealmList<MovieReview>> call, Throwable t) {
                 addRatingStarsToLayout(movie.getVoteAverage() / 2);
+                Toast.makeText(getApplicationContext(), "Something went wrong.", Toast.LENGTH_SHORT).show();
                 Log.d(TAG_ACTIVITY, "Failed to get movies reviews.");
             }
         });
     }
 
     private void getUserMovieRelationship(long movieId, long userId) {
-        Call<UserMovie> call = movieApiService.getUserMovie(movieId, userId);
+        Call<UserMovie> call = userApiService.getUserMovie(userId, movieId);
         call.enqueue(new Callback<UserMovie>() {
             @Override
             public void onResponse(Call<UserMovie> call, Response<UserMovie> response) {
                 if (response.isSuccess()) {
                     mUserMovie = response.body();
                     relationshipExists = true;
-                } else {
+                } else if (response.code() == 404) {
                     mUserMovie = new UserMovie(movie.getId(), user); // no relationship found, create new
                 }
                 setFabButtonSelectedState(mFavouriteButton, mUserMovie.isFavourite());
@@ -143,7 +151,6 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
 
             @Override
             public void onFailure(Call<UserMovie> call, Throwable t) {
-                Log.d(TAG_ACTIVITY, t.getMessage());
             }
         });
     }
@@ -322,10 +329,31 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
 
     @OnClick(R.id.fabRate)
     public void onClickRate() {
-        reviewDialog = ReviewDialogFragment.newInstance();
-        reviewDialog.show(getFragmentManager(), "ReviewDialogFragment");
-    }
 
+        MovieReview userReview = null;
+
+        // check if the user has already rated this movie
+        if (!movie.getReviews().isEmpty()) {
+            for (MovieReview review : movie.getReviews()) {
+                if (Objects.equals(review.getUser().getId(), user.getId())) {
+                    userReview = review;
+                }
+            }
+        }
+
+        if (userReview == null) {
+            // new rating
+            userReview = new MovieReview(movie.getId(), user);
+        }
+
+        // pass the Movie Review to dialog and create a new instance
+        reviewDialog = ReviewDialogFragment.newInstance(userReview);
+        reviewDialog.show(getFragmentManager(), "ReviewDialogFragment");
+
+        if (!mUserMovie.isOnWatchedList()) {
+            onClickAddToSeenIt();
+        }
+    }
 
     @OnClick(R.id.fabSeenIt)
     public void onClickAddToSeenIt() {
@@ -364,7 +392,7 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
     private void updateUserMovie(final UserMovie userMovie) {
         if (userMovie != null) {
             if (relationshipExists) { // update
-                Call<UserMovie> call = movieApiService.updateUserMovie(userMovie);
+                Call<UserMovie> call = userApiService.updateUserMovie(userMovie);
                 call.enqueue(new Callback<UserMovie>() {
                     @Override
                     public void onResponse(Call<UserMovie> call, Response<UserMovie> response) {
@@ -379,19 +407,18 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
                     }
                 });
             } else {
-                Call<UserMovie> call = movieApiService.createUserMovie(userMovie);
+                Call<UserMovie> call = userApiService.createUserMovie(userMovie);
                 call.enqueue(new Callback<UserMovie>() {
                     @Override
                     public void onResponse(Call<UserMovie> call, Response<UserMovie> response) {
                         if (response.isSuccess()) {
                             mUserMovie = response.body();
                         }
-                        Log.d(TAG_ACTIVITY, response.message());
                     }
 
                     @Override
                     public void onFailure(Call<UserMovie> call, Throwable t) {
-                        Log.e(TAG_ACTIVITY, t.getLocalizedMessage());
+                        Log.d(TAG_ACTIVITY, "Error");
                     }
                 });
             }
@@ -399,28 +426,57 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
     }
 
     @Override
-    public void onFinishReview(float rating, String description) {
-        MovieReview review = new MovieReview(user, movie.getId(), rating, description);
+    public void onFinishReview(MovieReview review) {
         reviewDialog.dismiss(); // close review dialog after getting the data
+
         addMovieReview(review);
     }
 
-    private void addMovieReview(MovieReview review) {
-        if (review != null) {
+    private void addMovieReview(final MovieReview review) {
+        if (review.getId() == null) {
+            // new review
             Call<MovieReview> call = movieApiService.createMovieReview(review);
             call.enqueue(new Callback<MovieReview>() {
                 @Override
                 public void onResponse(Call<MovieReview> call, Response<MovieReview> response) {
                     if (response.isSuccess()) {
-                        Log.d(TAG_ACTIVITY, "TEST");
+                        movie.getReviews().add(response.body());
                     }
                 }
 
                 @Override
                 public void onFailure(Call<MovieReview> call, Throwable t) {
-                    Log.d(TAG_ACTIVITY, "Failed.");
+                    Toast.makeText(getApplicationContext(), "Something went wrong.", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG_ACTIVITY, "Error creating movie review.");
                 }
             });
+        } else {
+            // update review
+            Call<MovieReview> call = movieApiService.updateMovieReview(review);
+            call.enqueue(new Callback<MovieReview>() {
+                @Override
+                public void onResponse(Call<MovieReview> call, Response<MovieReview> response) {
+                    if (response.isSuccess()) {
+                        replaceOldReviewInList(movie.getReviews(), response.body());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<MovieReview> call, Throwable t) {
+                    Toast.makeText(getApplicationContext(), "Something went wrong.", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG_ACTIVITY, "Error creating movie review.");
+                }
+            });
+        }
+    }
+
+    // I wish Android had Java 8 so I could use Lambdas, this is the bets option
+    private void replaceOldReviewInList(RealmList<MovieReview> reviews, MovieReview review) {
+        for (int i = 0; i < reviews.size(); i++) {
+            if (Objects.equals(reviews.get(i).getId(), review.getId())) {
+                reviews.set(i, review);
+            }
+
         }
     }
 }

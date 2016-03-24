@@ -4,6 +4,7 @@ package com.example.enda.flickadvisor.fragments;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.enda.flickadvisor.R;
+import com.example.enda.flickadvisor.models.MovieReview;
+
+import org.parceler.Parcels;
 
 public class ReviewDialogFragment extends DialogFragment {
 
@@ -20,15 +24,24 @@ public class ReviewDialogFragment extends DialogFragment {
 
     private RatingBar ratingBar;
     private TextView mDescription;
+    private MovieReview mReview;
 
     OnAddReviewListener mCallback;
 
     public interface OnAddReviewListener {
-        void onFinishReview(float rating, String description);
+        void onFinishReview(MovieReview movieReview);
     }
 
-    public static ReviewDialogFragment newInstance() {
-        return new ReviewDialogFragment();
+    public static ReviewDialogFragment newInstance(MovieReview userReview) {
+        ReviewDialogFragment dialog = new ReviewDialogFragment();
+
+        // put review into a Bundle as a Parcelable
+        Bundle args = new Bundle();
+        Parcelable parcel = Parcels.wrap(userReview);
+        args.putParcelable("review", parcel);
+        dialog.setArguments(args);
+
+        return dialog;
     }
 
     @Override
@@ -41,8 +54,12 @@ public class ReviewDialogFragment extends DialogFragment {
     public void onViewCreated(View v, Bundle savedInstanceState) {
         super.onViewCreated(v, savedInstanceState);
 
+        mReview = Parcels.unwrap(getArguments().getParcelable("review"));
         ratingBar = (RatingBar) v.findViewById(R.id.ratingBar);
         mDescription = (TextView) v.findViewById(R.id.reviewDescription);
+
+        ratingBar.setRating(mReview.getRating());
+        mDescription.setText(mReview.getDescription());
 
         setButtonClickListeners(v);
     }
@@ -68,7 +85,9 @@ public class ReviewDialogFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 if (ratingBar.getRating() > 1F) {
-                    returnData(ratingBar.getRating(), mDescription.getText() == null ? "" : mDescription.getText().toString());
+                    mReview.setRating(ratingBar.getRating());
+                    mReview.setDescription(mDescription.getText().toString());
+                    returnData(mReview);
                 } else {
                     Toast.makeText(getActivity().getApplicationContext(), "Please select a rating between 1 and 5.", Toast.LENGTH_SHORT).show();
                 }
@@ -84,8 +103,8 @@ public class ReviewDialogFragment extends DialogFragment {
         });
     }
 
-    private void returnData(float rating, String description) {
-        mCallback.onFinishReview(rating, description);
+    private void returnData(final MovieReview movieReview) {
+        mCallback.onFinishReview(movieReview);
     }
 
 }
