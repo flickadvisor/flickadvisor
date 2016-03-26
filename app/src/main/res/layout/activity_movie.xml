@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -9,7 +8,6 @@
     android:id="@+id/movie_activity_layout"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     tools:context="com.example.enda.flickadvisor.activities.MovieActivity">
-
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -87,5 +85,10 @@
 
     </com.github.clans.fab.FloatingActionMenu>
 
+    <FrameLayout
+        android:id="@+id/reviews_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </FrameLayout>
 
 </android.support.design.widget.CoordinatorLayout>

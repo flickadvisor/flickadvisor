@@ -20,7 +20,7 @@ import org.parceler.Parcels;
 
 public class ReviewDialogFragment extends DialogFragment {
 
-    private static final String TAG_FRAGMENT = "FRAGMENT_REVIEW_DIALOG";
+    private static String TAG_FRAGMENT;
 
     private RatingBar ratingBar;
     private TextView mDescription;
@@ -47,6 +47,7 @@ public class ReviewDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        TAG_FRAGMENT = getActivity().toString();
         return inflater.inflate(R.layout.fragment_review_dialog, container, false);
     }
 

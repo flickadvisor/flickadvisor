@@ -10,6 +10,7 @@
 
     <!--android:vmSafeMode="true"-->
     <application
+        android:vmSafeMode="true"
         android:name=".Application"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"

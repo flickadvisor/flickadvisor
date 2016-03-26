@@ -26,7 +26,8 @@ public class MainActivity extends AppCompatActivity
 
     private static final String TAG_ACTIVITY = "MAIN_ACTIVITY";
 
-    @Override protected void onCreate(Bundle savedInstanceState) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -42,17 +43,23 @@ public class MainActivity extends AppCompatActivity
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+
+        if (drawer != null) {
+            drawer.addDrawerListener(toggle);
+        }
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
 
-        // set navigation menu icon states
-        Menu nav = navigationView.getMenu();
-        nav.findItem(R.id.nav_browse).setChecked(true);
+        if (navigationView != null) {
+            navigationView.setNavigationItemSelectedListener(this);
 
-        setMenuAccountSectionState(nav, UserRealmService.isLoggedIn());
+            // set navigation menu icon states
+            Menu nav = navigationView.getMenu();
+            nav.findItem(R.id.nav_browse).setChecked(true);
+
+            setMenuAccountSectionState(nav, UserRealmService.isLoggedIn());
+        }
     }
 
     private void setMenuAccountSectionState(Menu nav, boolean isLoggedIn) {
@@ -63,14 +70,17 @@ public class MainActivity extends AppCompatActivity
 
     @Override public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
+        if (drawer != null) {
+            if (drawer.isDrawerOpen(GravityCompat.START)) {
+                drawer.closeDrawer(GravityCompat.START);
+            } else {
+                super.onBackPressed();
+            }
         }
     }
 
-    @Override public boolean onCreateOptionsMenu(Menu menu) {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
 

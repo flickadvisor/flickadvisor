@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -77,6 +78,7 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
     @Bind(R.id.fabWatchLater) FloatingActionButton mWatchLaterButton;
     @Bind(R.id.fabSeenIt) FloatingActionButton mSeenItButton;
     @Bind(R.id.fabFavourite) FloatingActionButton mFavouriteButton;
+    @Bind(R.id.openReviewsList) Button mOpenReviews;
     //endregion
 
     @Override
@@ -88,7 +90,10 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
         user = UserRealmService.getCurrentUser();
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         // show progress indicator until all elements are loaded to the view
         showProgress(true);
@@ -329,7 +334,6 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
 
     @OnClick(R.id.fabRate)
     public void onClickRate() {
-
         MovieReview userReview = null;
 
         // check if the user has already rated this movie
@@ -387,6 +391,10 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
         } else {
             signInToast();
         }
+    }
+
+    @OnClick(R.id.openReviewsList)
+    public void openReviews() {
     }
 
     private void updateUserMovie(final UserMovie userMovie) {
