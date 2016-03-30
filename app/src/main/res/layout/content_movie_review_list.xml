@@ -8,32 +8,11 @@
     tools:context="com.example.enda.flickadvisor.activities.MovieReviewListActivity"
     tools:showIn="@layout/activity_movie_review_list">
 
-    <ScrollView
+    <android.support.v7.widget.RecyclerView
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:id="@+id/movie_review_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <Spinner
-                android:paddingStart="16dp"
-                android:paddingEnd="0dp"
-                android:gravity="start"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/spinner_sort_movie_reviews" />
-
-            <android.support.v7.widget.RecyclerView
-                app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                android:id="@+id/movie_review_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-            </android.support.v7.widget.RecyclerView>
-
-        </LinearLayout>
-
-    </ScrollView>
+    </android.support.v7.widget.RecyclerView>
 
 </FrameLayout>

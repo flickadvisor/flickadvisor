@@ -68,7 +68,8 @@ public class MainActivity extends AppCompatActivity
         nav.findItem(R.id.nav_sign_out).setVisible(isLoggedIn);
     }
 
-    @Override public void onBackPressed() {
+    @Override
+    public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer != null) {
             if (drawer.isDrawerOpen(GravityCompat.START)) {

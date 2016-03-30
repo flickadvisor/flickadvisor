@@ -60,7 +60,6 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
     private static UserMovie mUserMovie;
     private UserTbl user;
     private static boolean relationshipExists = false;
-    private Toolbar toolbar;
     private ReviewDialogFragment reviewDialog;
 
     // api service builders
@@ -92,11 +91,12 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
         ButterKnife.bind(this);
 
         user = UserRealmService.getCurrentUser();
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
 
         tmbdMovieApiService
@@ -120,8 +120,10 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
             bindDataToView(movie);
             bindStarsToView();
             setFabButtonStates();
+            mOpenReviews.setVisibility(View.VISIBLE);
         }
     }
+
 
     private void getMovieReviews(long movieId) {
         Call<RealmList<MovieReview>> call = movieApiService.getMovieReviews(movieId);
@@ -130,24 +132,21 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
             public void onResponse(Call<RealmList<MovieReview>> call, Response<RealmList<MovieReview>> response) {
                 if (response.isSuccess()) {
                     movie.setReviews(response.body());
+                    mOpenReviews.setVisibility(View.VISIBLE);
+                    bindStarsToView();
                 }
-
-                bindStarsToView();
             }
 
             @Override
             public void onFailure(Call<RealmList<MovieReview>> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "Something went wrong.", Toast.LENGTH_SHORT).show();
                 Log.d(TAG_ACTIVITY, "Failed to get movies reviews.");
             }
         });
     }
 
     private void bindStarsToView() {
-        if (movie.getReviews() != null && movie.getReviews().size() >= 10) {
+        if (movie.getReviews() != null && movie.getReviews().size() > 0) {
             addRatingStarsToLayout(getAverageRating(movie.getReviews()));
-        } else {
-            addRatingStarsToLayout(movie.getVoteAverage());
         }
     }
 
@@ -227,8 +226,6 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
     }
 
     private void bindDataToView(Movie movie) {
-        toolbar.setTitle(movie.getTitle());
-
         loadImageToPoster(movie.getPosterPath());
 
         Calendar c = new GregorianCalendar();

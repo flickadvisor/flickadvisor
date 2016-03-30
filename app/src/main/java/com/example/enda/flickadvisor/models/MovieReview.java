@@ -20,7 +20,6 @@ public class MovieReview extends RealmObject {
     private float rating;
     private String description;
     private long date; // Realm is limiting me here, cannot parse long to date, using long and will format for display
-//    private Date date;
 
     public MovieReview() {
     }
@@ -87,4 +86,5 @@ public class MovieReview extends RealmObject {
     public void setDate(long date) {
         this.date = date;
     }
+
 }

@@ -37,4 +37,8 @@
 
     <string name="action_read_reviews">Read Reviews</string>
     <string name="title_activity_movie_review_list"></string>
+    <string name="action_sort">Sort</string>
+    <string name="title_sort">Sort</string>
+    <string name="title_highest_rated_first">Top Rated First</string>
+    <string name="title_newest_first">Newest First</string>
 </resources>

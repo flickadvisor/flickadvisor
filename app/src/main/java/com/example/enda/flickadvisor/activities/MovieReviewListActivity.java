@@ -5,19 +5,24 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
+import android.view.MenuItem;
+import android.widget.ImageButton;
+import android.widget.PopupMenu;
 
 import com.example.enda.flickadvisor.R;
 import com.example.enda.flickadvisor.adapters.MovieReviewsRecyclerAdapter;
 import com.example.enda.flickadvisor.models.Movie;
-import com.example.enda.flickadvisor.models.ReviewSorting;
+import com.example.enda.flickadvisor.models.MovieReview;
 
 import org.parceler.Parcels;
 
+import java.util.Collections;
+import java.util.Comparator;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnItemSelected;
+import butterknife.OnClick;
+import io.realm.RealmList;
 
 public class MovieReviewListActivity extends AppCompatActivity {
 
@@ -26,13 +31,14 @@ public class MovieReviewListActivity extends AppCompatActivity {
     protected MovieReviewsRecyclerAdapter mRecyclerViewAdapter;
 
     // view bindings
-    @Bind(R.id.spinner_sort_movie_reviews) Spinner mSortReviewsSpinner;
+    @Bind(R.id.sort_movie_reviews_nav) ImageButton mSortReviewsButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_review_list);
         ButterKnife.bind(this);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -44,17 +50,10 @@ public class MovieReviewListActivity extends AppCompatActivity {
             mMovie = Parcels.unwrap(getIntent().getParcelableExtra("movie"));
         }
 
-        if (mMovie != null && mMovie.getReviews().size() > 0) {
+        if (mMovie != null && mMovie.getReviews() != null) {
+            sortReviewsByDate(mMovie.getReviews());
             createRecyclerReview();
-            setUpSpinner();
         }
-    }
-
-    private void setUpSpinner() {
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.review_sortings_array, R.layout.support_simple_spinner_dropdown_item);
-        adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        mSortReviewsSpinner.setAdapter(adapter);
     }
 
     private void createRecyclerReview() {
@@ -66,17 +65,44 @@ public class MovieReviewListActivity extends AppCompatActivity {
         mRecyclerView.setAdapter(mRecyclerViewAdapter);
     }
 
-    @OnItemSelected(R.id.spinner_sort_movie_reviews)
-    public void onClickSortReviews(int position) {
-        ReviewSorting selected = ReviewSorting.fromInt(position);
+    @OnClick(R.id.sort_movie_reviews_nav)
+    public void onClickSortReviews() {
+        PopupMenu popup = new PopupMenu(this, mSortReviewsButton);
+        popup.getMenuInflater()
+                .inflate(R.menu.sort_reviews_menu, popup.getMenu());
 
-        if (selected == ReviewSorting.NewestFirst) {
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getTitle() == getString(R.string.title_newest_first)) {
+                    sortReviewsByDate(mMovie.getReviews());
+                    mRecyclerViewAdapter.notifyDataSetChanged();
+                } else if (item.getTitle().equals(getString(R.string.title_highest_rated_first))) {
+                    sortReviewsByRating(mMovie.getReviews());
+                    mRecyclerViewAdapter.notifyDataSetChanged();
+                }
+                return true;
+            }
+        });
+        popup.show();
+    }
 
-        } else if (selected == ReviewSorting.TopRatedFirst) {
-            
-        }
+    private void sortReviewsByDate(RealmList<MovieReview> reviews) {
+        Collections.sort(reviews, new Comparator<MovieReview>() {
+            @Override
+            public int compare(MovieReview reviewOne, MovieReview reviewTwo) {
+                return Long.compare(reviewOne.getDate(), reviewTwo.getDate());
+            }
+        });
+    }
 
-        mRecyclerViewAdapter.notifyDataSetChanged();
+    private void sortReviewsByRating(RealmList<MovieReview> reviews) {
+        Collections.sort(reviews, new Comparator<MovieReview>() {
+            @Override
+            public int compare(MovieReview reviewOne, MovieReview reviewTwo) {
+                return Float.compare(reviewTwo.getRating(), reviewOne.getRating());
+            }
+        });
     }
 
 }
