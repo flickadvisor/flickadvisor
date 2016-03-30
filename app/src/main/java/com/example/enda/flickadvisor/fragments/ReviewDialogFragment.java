@@ -47,7 +47,7 @@ public class ReviewDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        TAG_FRAGMENT = getActivity().toString();
+        TAG_FRAGMENT = this.toString();
         return inflater.inflate(R.layout.fragment_review_dialog, container, false);
     }
 
@@ -85,7 +85,7 @@ public class ReviewDialogFragment extends DialogFragment {
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ratingBar.getRating() > 1F) {
+                if (ratingBar.getRating() > 0F) {
                     mReview.setRating(ratingBar.getRating());
                     mReview.setDescription(mDescription.getText().toString());
                     returnData(mReview);

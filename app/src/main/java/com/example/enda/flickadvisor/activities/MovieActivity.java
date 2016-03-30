@@ -3,9 +3,11 @@ package com.example.enda.flickadvisor.activities;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -36,6 +38,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.squareup.picasso.Picasso;
 
+import org.parceler.Parcels;
+
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Objects;
@@ -52,17 +56,17 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
 
     //region Globals
     private String TAG_ACTIVITY = this.toString();
-    private Movie movie;
-    private UserMovie mUserMovie;
+    private static Movie movie;
+    private static UserMovie mUserMovie;
     private UserTbl user;
+    private static boolean relationshipExists = false;
     private Toolbar toolbar;
     private ReviewDialogFragment reviewDialog;
+
     // api service builders
     private TMDbMovieApiService tmbdMovieApiService;
     private MovieApiService movieApiService;
     private UserApiService userApiService;
-
-    private boolean relationshipExists = false;
 
     // view bindings
     @Bind(R.id.movie_progress) View mProgressView;
@@ -95,22 +99,28 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
+        tmbdMovieApiService
+                = TMDbServiceGenerator.createService(TMDbMovieApiService.class);
+        movieApiService
+                = ApiServiceGenerator.createService(MovieApiService.class);
+        userApiService
+                = ApiServiceGenerator.createService(UserApiService.class);
+
         // show progress indicator until all elements are loaded to the view
         showProgress(true);
-        Bundle args = getIntent().getExtras();
-        long movieId = args.getLong("movieId", 0L);
 
-        tmbdMovieApiService =
-                TMDbServiceGenerator.createService(TMDbMovieApiService.class);
-        movieApiService =
-                ApiServiceGenerator.createService(MovieApiService.class);
-        userApiService =
-                ApiServiceGenerator.createService(UserApiService.class);
+        if (getIntent().getExtras() != null) {
+            Bundle args = getIntent().getExtras();
+            long movieId = args.getLong("movieId", 0L);
 
-        if (movieId != 0L) {
-            getMovieWithId(movieId);
+            if (movieId != 0L) {
+                getMovieWithId(movieId);
+            }
+        } else if (movie != null) {
+            bindDataToView(movie);
+            bindStarsToView();
+            setFabButtonStates();
         }
-
     }
 
     private void getMovieReviews(long movieId) {
@@ -122,20 +132,23 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
                     movie.setReviews(response.body());
                 }
 
-                if (movie.getReviews() != null && movie.getReviews().size() > 9) {
-                    addRatingStarsToLayout(getAverageRating(movie.getReviews()));
-                } else {
-                    addRatingStarsToLayout(movie.getVoteAverage() / 2);
-                }
+                bindStarsToView();
             }
 
             @Override
             public void onFailure(Call<RealmList<MovieReview>> call, Throwable t) {
-                addRatingStarsToLayout(movie.getVoteAverage() / 2);
                 Toast.makeText(getApplicationContext(), "Something went wrong.", Toast.LENGTH_SHORT).show();
                 Log.d(TAG_ACTIVITY, "Failed to get movies reviews.");
             }
         });
+    }
+
+    private void bindStarsToView() {
+        if (movie.getReviews() != null && movie.getReviews().size() >= 10) {
+            addRatingStarsToLayout(getAverageRating(movie.getReviews()));
+        } else {
+            addRatingStarsToLayout(movie.getVoteAverage());
+        }
     }
 
     private void getUserMovieRelationship(long movieId, long userId) {
@@ -149,15 +162,19 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
                 } else if (response.code() == 404) {
                     mUserMovie = new UserMovie(movie.getId(), user); // no relationship found, create new
                 }
-                setFabButtonSelectedState(mFavouriteButton, mUserMovie.isFavourite());
-                setFabButtonSelectedState(mSeenItButton, mUserMovie.isOnWatchedList());
-                setFabButtonSelectedState(mWatchLaterButton, mUserMovie.isOnWatchList());
+                setFabButtonStates();
             }
 
             @Override
             public void onFailure(Call<UserMovie> call, Throwable t) {
             }
         });
+    }
+
+    private void setFabButtonStates() {
+        setFabButtonSelectedState(mFavouriteButton, mUserMovie.isFavourite());
+        setFabButtonSelectedState(mSeenItButton, mUserMovie.isOnWatchedList());
+        setFabButtonSelectedState(mWatchLaterButton, mUserMovie.isOnWatchList());
     }
 
     private void setFabButtonSelectedState(FloatingActionButton fab, boolean isSelected) {
@@ -395,6 +412,10 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
 
     @OnClick(R.id.openReviewsList)
     public void openReviews() {
+        Intent intent = new Intent(this, MovieReviewListActivity.class);
+        Parcelable parcel = Parcels.wrap(movie);
+        intent.putExtra("movie", parcel);
+        startActivity(intent);
     }
 
     private void updateUserMovie(final UserMovie userMovie) {

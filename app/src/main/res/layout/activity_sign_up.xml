@@ -69,8 +69,9 @@
 
             <Button
                 android:id="@+id/email_sign_up_button"
-                android:textColor="@color/colorAccent"
+                android:backgroundTint="@color/colorAccent"
                 style="?android:textAppearanceSmall"
+                android:textColor="@color/colorTextLight"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"

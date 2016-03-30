@@ -1,16 +1,28 @@
 package com.example.enda.flickadvisor.util;
 
-import com.google.gson.Gson;
+import android.content.Context;
+import android.provider.Settings;
+import android.text.TextUtils;
 
-import java.lang.reflect.Type;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by enda on 22/03/16.
  */
 public class GeneralHelper {
 
-    public static String convertObjectToJson(Object object, Type type) {
-        Gson gson = new Gson();
-        return gson.toJson(object, type);
+    // http://stackoverflow.com/a/6982154/2324937
+    // getting the exact date format in user's phone
+    public static String dateToSystemFormat(Context context, Date date) {
+        final String format = Settings.System.getString(context.getContentResolver(), Settings.System.DATE_FORMAT);
+        DateFormat dateFormat;
+        if (TextUtils.isEmpty(format)) {
+            dateFormat = android.text.format.DateFormat.getMediumDateFormat(context);
+        } else {
+            dateFormat = new SimpleDateFormat(format);
+        }
+        return dateFormat.format(date);
     }
 }

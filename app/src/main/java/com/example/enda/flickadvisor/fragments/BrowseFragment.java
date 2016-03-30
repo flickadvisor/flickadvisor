@@ -47,7 +47,6 @@ public class BrowseFragment extends Fragment {
         // Required empty public constructor
     }
 
-
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -163,13 +162,11 @@ public class BrowseFragment extends Fragment {
     private void createNewMovieRecyclerView(int recyclerView, List<JsonObject> list) {
         RecyclerView.Adapter mAdapter = new BrowseMoviesRecyclerAdapter(getContext(), list);
 
-        RecyclerView mRecyclerView =
-                (RecyclerView)rootView.findViewById(recyclerView);
+        RecyclerView mRecyclerView
+                = (RecyclerView)rootView.findViewById(recyclerView);
 
         mRecyclerView.setHasFixedSize(true);
-
         mRecyclerView.setLayoutManager(newLayoutManager());
-
         mRecyclerView.setAdapter(mAdapter);
     }
 

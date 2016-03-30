@@ -17,10 +17,9 @@ public class MovieReviewSerializer implements JsonSerializer<MovieReview> {
         final JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("id", src.getId());
         jsonObject.addProperty("movieId", src.getMovieId());
-//        jsonObject.addProperty("user", GeneralHelper.convertObjectToJson(src.getUser())); // freezes application
         jsonObject.addProperty("rating", src.getRating());
         jsonObject.addProperty("description", src.getDescription());
-        jsonObject.addProperty("date", src.getDate());
+        jsonObject.addProperty("date", String.valueOf(src.getDate()));
         return jsonObject;
     }
 }

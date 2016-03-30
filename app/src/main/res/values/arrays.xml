@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="review_sortings_array">
+        <item>Newest first</item>
+        <item>Highest rating first</item>
+    </string-array>
+</resources>
