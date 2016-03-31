@@ -1,0 +1,36 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.DiscoverFragment">
+
+    <LinearLayout
+        android:padding="44dp"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:text="@string/action_random_suggestion"
+            android:id="@+id/button_random_suggestion"
+            android:backgroundTint="@color/colorAccent"
+            style="?android:textAppearanceSmall"
+            android:textColor="@color/colorTextLight"
+            android:layout_width="match_parent"
+            android:layout_marginBottom="5dp"
+            android:layout_height="54dp" />
+
+        <Button
+            android:layout_marginTop="5dp"
+            android:text="@string/action_launch_advanced_search"
+            android:id="@+id/button_advanced_search"
+            android:backgroundTint="@color/colorAccent"
+            style="?android:textAppearanceSmall"
+            android:textColor="@color/colorTextLight"
+            android:layout_width="match_parent"
+            android:layout_height="54dp" />
+
+    </LinearLayout>
+
+</FrameLayout>

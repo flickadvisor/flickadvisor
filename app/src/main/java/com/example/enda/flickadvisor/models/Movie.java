@@ -4,7 +4,6 @@ import com.example.enda.flickadvisor.util.GenreListConverter;
 import com.example.enda.flickadvisor.util.MovieReviewListConverter;
 import com.google.gson.JsonObject;
 
-import org.parceler.Parcel;
 import org.parceler.ParcelPropertyConverter;
 
 import java.text.ParseException;
@@ -12,7 +11,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import io.realm.MovieRealmProxy;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -20,15 +18,16 @@ import io.realm.annotations.PrimaryKey;
 /**
  * Created by enda on 12/03/16.
  */
-@Parcel(implementations = { MovieRealmProxy.class },
-        value = Parcel.Serialization.BEAN,
-        analyze = Movie.class)
+//@Parcel(implementations = { MovieRealmProxy.class },
+//        value = Parcel.Serialization.BEAN,
+//        analyze = Movie.class)
 public class Movie extends RealmObject {
     @PrimaryKey
     private Long id;
     private String title;
     private String imdbId;
-    private String language;
+    private String displayLanguage;
+    private String originalLanguage;
     private boolean adult;
     private String overview;
     private String backdropPath;
@@ -49,13 +48,11 @@ public class Movie extends RealmObject {
         this.id = json.get("id").getAsLong();
         this.title = json.get("original_title").getAsString();
         this.imdbId = json.get("imdb_id") == null ? null : json.get("imdb_id").getAsString();
-//        this.language = json.get("original_language").getAsString();
-        this.language = json.get("spoken_languages").getAsJsonArray().get(0).getAsJsonObject().get("name").getAsString();
         this.adult = json.get("adult").getAsBoolean();
         this.overview = json.get("overview").getAsString();
+        this.originalLanguage = json.get("original_language").getAsString();
         this.backdropPath = "http://image.tmdb.org/t/p/w185" + json.get("backdrop_path").getAsString();
         this.posterPath = "http://image.tmdb.org/t/p/w185" + json.get("poster_path").getAsString();
-        //region this.releaseDate = json.get("release_date").getDate();
         String dateString = json.get("release_date").getAsString();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         try {
@@ -96,12 +93,12 @@ public class Movie extends RealmObject {
         this.imdbId = imdbId;
     }
 
-    public String getLanguage() {
-        return language;
+    public String getOriginalLanguage() {
+        return originalLanguage;
     }
 
-    public void setLanguage(String language) {
-        this.language = language;
+    public void setOriginalLanguage(String originalLanguage) {
+        this.originalLanguage = originalLanguage;
     }
 
     public boolean isAdult() {
@@ -182,6 +179,14 @@ public class Movie extends RealmObject {
 
     public void setVoteCount(long voteCount) {
         this.voteCount = voteCount;
+    }
+
+    public String getDisplayLanguage() {
+        return displayLanguage;
+    }
+
+    public void setDisplayLanguage(String displayLanguage) {
+        this.displayLanguage = displayLanguage;
     }
 
     public RealmList<MovieReview> getReviews() {

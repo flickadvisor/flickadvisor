@@ -1,6 +1,6 @@
 package com.example.enda.flickadvisor.services.api;
 
-import com.example.enda.flickadvisor.models.UserTbl;
+import com.example.enda.flickadvisor.models.User;
 import com.example.enda.flickadvisor.util.UserSerializer;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
@@ -46,7 +46,7 @@ public class ApiServiceGenerator {
 //            .registerTypeAdapter(Movie.class, new MovieSerializer())
 //            .registerTypeAdapter(MovieReview.class, new MovieReviewSerializer())
 //            .registerTypeAdapter(Genre.class, new GenreSerializer())
-            .registerTypeAdapter(UserTbl.class, new UserSerializer())
+            .registerTypeAdapter(User.class, new UserSerializer())
 //            .registerTypeAdapter(Series.class, new SeriesSerializer())
 //            .registerTypeAdapter(SeriesReview.class, new SeriesReviewSerializer())
 //            .registerTypeAdapter(UserMovie.class, new UserMovieSerializer())

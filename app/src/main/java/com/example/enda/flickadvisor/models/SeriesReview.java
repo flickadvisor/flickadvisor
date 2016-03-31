@@ -18,7 +18,7 @@ public class SeriesReview extends RealmObject {
     private float rating;
     private String description;
     private long date;
-    private UserTbl user;
+    private User user;
     private Long seriesId;
 
     public SeriesReview() {
@@ -56,11 +56,11 @@ public class SeriesReview extends RealmObject {
         this.date = date;
     }
 
-    public UserTbl getUser() {
+    public User getUser() {
         return user;
     }
 
-    public void setUser(UserTbl user) {
+    public void setUser(User user) {
         this.user = user;
     }
 

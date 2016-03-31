@@ -1,14 +1,10 @@
 package com.example.enda.flickadvisor.models;
 
-import com.example.enda.flickadvisor.util.MovieListConverter;
-import com.example.enda.flickadvisor.util.SeriesListConverter;
 import com.google.gson.JsonObject;
 
 import org.parceler.Parcel;
-import org.parceler.ParcelPropertyConverter;
 
 import io.realm.GenreRealmProxy;
-import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
@@ -24,8 +20,6 @@ public class Genre extends RealmObject {
     private Long id;
     @Required
     private String name;
-    private RealmList<Movie> movies;
-    private RealmList<Series> series;
 
     public Genre() {
     }
@@ -51,22 +45,5 @@ public class Genre extends RealmObject {
         this.name = name;
     }
 
-    public RealmList<Movie> getMovies() {
-        return movies;
-    }
-
-    @ParcelPropertyConverter(MovieListConverter.class)
-    public void setMovies(RealmList<Movie> movies) {
-        this.movies = movies;
-    }
-
-    public RealmList<Series> getSeries() {
-        return series;
-    }
-
-    @ParcelPropertyConverter(SeriesListConverter.class)
-    public void setSeries(RealmList<Series> series) {
-        this.series = series;
-    }
 
 }

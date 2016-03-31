@@ -2,7 +2,6 @@ package com.example.enda.flickadvisor.models;
 
 import org.parceler.Parcel;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import io.realm.RealmObject;
@@ -15,11 +14,11 @@ import io.realm.annotations.PrimaryKey;
 @Parcel(implementations = { UserMovieRealmProxy.class },
         value = Parcel.Serialization.BEAN,
         analyze = UserMovie.class)
-public class UserMovie extends RealmObject implements Serializable {
+public class UserMovie extends RealmObject {
     @PrimaryKey
     private long id;
     private long movieId;
-    private UserTbl user;
+    private User user;
     private boolean isOnWatchList;
     private boolean isOnWatchedList;
     private boolean isHidden;
@@ -29,7 +28,7 @@ public class UserMovie extends RealmObject implements Serializable {
     public UserMovie() {
     }
 
-    public UserMovie(long movieId, UserTbl user) {
+    public UserMovie(long movieId, User user) {
         this.movieId = movieId;
         this.user = user;
         this.isOnWatchList = false;
@@ -94,11 +93,11 @@ public class UserMovie extends RealmObject implements Serializable {
         this.dateAdded = dateAdded;
     }
 
-    public UserTbl getUser() {
+    public User getUser() {
         return user;
     }
 
-    public void setUser(UserTbl user) {
+    public void setUser(User user) {
         this.user = user;
     }
 }

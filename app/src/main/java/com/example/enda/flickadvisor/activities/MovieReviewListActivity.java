@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 
@@ -17,7 +16,6 @@ import com.example.enda.flickadvisor.models.MovieReview;
 import org.parceler.Parcels;
 
 import java.util.Collections;
-import java.util.Comparator;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -71,38 +69,31 @@ public class MovieReviewListActivity extends AppCompatActivity {
         popup.getMenuInflater()
                 .inflate(R.menu.sort_reviews_menu, popup.getMenu());
 
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                if (item.getTitle() == getString(R.string.title_newest_first)) {
-                    sortReviewsByDate(mMovie.getReviews());
-                    mRecyclerViewAdapter.notifyDataSetChanged();
-                } else if (item.getTitle().equals(getString(R.string.title_highest_rated_first))) {
-                    sortReviewsByRating(mMovie.getReviews());
-                    mRecyclerViewAdapter.notifyDataSetChanged();
-                }
-                return true;
+        popup.setOnMenuItemClickListener(item -> {
+            if (item.getTitle() == getString(R.string.title_newest_first)) {
+
+                sortReviewsByDate(mMovie.getReviews());
+                mRecyclerViewAdapter.notifyDataSetChanged();
+
+            } else if (item.getTitle().equals(getString(R.string.title_highest_rated_first))) {
+
+                sortReviewsByRating(mMovie.getReviews());
             }
+            return true;
         });
         popup.show();
     }
 
     private void sortReviewsByDate(RealmList<MovieReview> reviews) {
-        Collections.sort(reviews, new Comparator<MovieReview>() {
-            @Override
-            public int compare(MovieReview reviewOne, MovieReview reviewTwo) {
-                return Long.compare(reviewOne.getDate(), reviewTwo.getDate());
-            }
-        });
+        Collections.sort(reviews, (reviewOne, reviewTwo)
+                -> Long.compare(reviewOne.getDate(), reviewTwo.getDate()));
+        mRecyclerViewAdapter.notifyDataSetChanged();
     }
 
     private void sortReviewsByRating(RealmList<MovieReview> reviews) {
-        Collections.sort(reviews, new Comparator<MovieReview>() {
-            @Override
-            public int compare(MovieReview reviewOne, MovieReview reviewTwo) {
-                return Float.compare(reviewTwo.getRating(), reviewOne.getRating());
-            }
-        });
+        Collections.sort(reviews, (reviewOne, reviewTwo) ->
+                Float.compare(reviewTwo.getRating(), reviewOne.getRating()));
+        mRecyclerViewAdapter.notifyDataSetChanged();
     }
 
 }

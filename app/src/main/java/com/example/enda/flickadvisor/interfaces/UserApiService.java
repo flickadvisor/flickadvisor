@@ -1,8 +1,8 @@
 package com.example.enda.flickadvisor.interfaces;
 
 import com.example.enda.flickadvisor.models.Credentials;
+import com.example.enda.flickadvisor.models.User;
 import com.example.enda.flickadvisor.models.UserMovie;
-import com.example.enda.flickadvisor.models.UserTbl;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -16,9 +16,9 @@ import retrofit2.http.Path;
  */
 public interface UserApiService {
     @POST("users/new")
-    Call<UserTbl> createUser(@Body UserTbl user);
+    Call<User> createUser(@Body User user);
     @POST("users/login")
-    Call<UserTbl> login(@Body Credentials credentials);
+    Call<User> login(@Body Credentials credentials);
     @POST(value = "users/movies/create")
     Call<UserMovie> createUserMovie(@Body UserMovie userMovie);
     @PUT(value = "users/movies/update")

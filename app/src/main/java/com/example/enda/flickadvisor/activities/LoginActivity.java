@@ -29,7 +29,7 @@ import android.widget.Toast;
 import com.example.enda.flickadvisor.R;
 import com.example.enda.flickadvisor.interfaces.UserApiService;
 import com.example.enda.flickadvisor.models.Credentials;
-import com.example.enda.flickadvisor.models.UserTbl;
+import com.example.enda.flickadvisor.models.User;
 import com.example.enda.flickadvisor.services.UserRealmService;
 import com.example.enda.flickadvisor.services.api.ApiServiceGenerator;
 
@@ -128,13 +128,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             UserApiService userApiService = ApiServiceGenerator.createService(UserApiService.class);
 
-            Call<UserTbl> call = userApiService.login(new Credentials(email, password));
+            Call<User> call = userApiService.login(new Credentials(email, password));
             // make call to webservice
-            call.enqueue(new Callback<UserTbl>() {
+            call.enqueue(new Callback<User>() {
                 @Override
-                public void onResponse(Call<UserTbl> call, Response<UserTbl> response) {
+                public void onResponse(Call<User> call, Response<User> response) {
                     if (response.isSuccess()) {
-                        UserTbl user = response.body(); // get user from HTTP response
+                        User user = response.body(); // get user from HTTP response
                         UserRealmService.saveUser(user);
                         success();
                     }
@@ -142,7 +142,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 }
 
                 @Override
-                public void onFailure(Call<UserTbl> call, Throwable t) {
+                public void onFailure(Call<User> call, Throwable t) {
                     Log.e(TAG_ACTIVITY, "Error: " + t.getMessage());
                     handleResponseCode(0);
                 }

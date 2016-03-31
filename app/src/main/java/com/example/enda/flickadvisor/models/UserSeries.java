@@ -18,7 +18,7 @@ public class UserSeries extends RealmObject {
     @PrimaryKey
     private Long id;
     private long seriesId;
-    private UserTbl user;
+    private User user;
     private boolean isOnWatchList;
     private boolean isOnWatchedList;
     private boolean isHidden;
@@ -28,7 +28,7 @@ public class UserSeries extends RealmObject {
     public UserSeries() {
     }
 
-    public UserSeries(long seriesId, UserTbl user) {
+    public UserSeries(long seriesId, User user) {
         this.seriesId = seriesId;
         this.user = user;
     }
@@ -49,11 +49,11 @@ public class UserSeries extends RealmObject {
         this.seriesId = seriesId;
     }
 
-    public UserTbl getUser() {
+    public User getUser() {
         return user;
     }
 
-    public void setUser(UserTbl user) {
+    public void setUser(User user) {
         this.user = user;
     }
 

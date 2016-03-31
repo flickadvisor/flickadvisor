@@ -3,33 +3,34 @@ package com.example.enda.flickadvisor.models;
 import org.parceler.Parcel;
 
 import io.realm.RealmObject;
-import io.realm.UserTblRealmProxy;
+import io.realm.UserRealmProxy;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
 /**
  * Created by enda on 17/02/16.
  */
-@Parcel(implementations = { UserTblRealmProxy.class },
+@Parcel(implementations = { UserRealmProxy.class },
         value = Parcel.Serialization.BEAN,
-        analyze = UserTbl.class)
-public class UserTbl extends RealmObject {
+        analyze = User.class)
+public class User extends RealmObject {
     @PrimaryKey
     private Long id;
     private String name;
     @Required
     private String email;
     private String password;
+    private String language;
 
-    public UserTbl() {
+    public User() {
     }
 
-    public UserTbl(String email, String password) {
+    public User(String email, String password) {
         this.email = email;
         this.password = password;
     }
 
-    public UserTbl(String email) {
+    public User(String email) {
         this.email = email;
     }
 
@@ -65,4 +66,11 @@ public class UserTbl extends RealmObject {
         this.name = name;
     }
 
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
 }

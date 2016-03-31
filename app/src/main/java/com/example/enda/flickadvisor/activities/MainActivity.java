@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -19,6 +18,7 @@ import android.widget.Toast;
 
 import com.example.enda.flickadvisor.R;
 import com.example.enda.flickadvisor.fragments.BrowseFragment;
+import com.example.enda.flickadvisor.fragments.DiscoverFragment;
 import com.example.enda.flickadvisor.services.UserRealmService;
 
 public class MainActivity extends AppCompatActivity
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, new BrowseFragment()).commit();
+                    .replace(R.id.container, BrowseFragment.newInstance()).commit();
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -116,17 +116,20 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        Fragment fragment;
         switch (id) {
             case R.id.nav_browse:
-                fragment = new BrowseFragment();
                 getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.container, fragment)
+                        .replace(R.id.container, BrowseFragment.newInstance())
                         .commit();
                 setTitle(R.string.title_browse_fragment);
                 break;
             case R.id.nav_discover:
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.container, DiscoverFragment.newInstance())
+                        .commit();
+                setTitle(R.string.title_discover_fragment);
                 break;
             case R.id.nav_my_movies:
                 break;
@@ -145,6 +148,7 @@ public class MainActivity extends AppCompatActivity
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+
         return true;
     }
 

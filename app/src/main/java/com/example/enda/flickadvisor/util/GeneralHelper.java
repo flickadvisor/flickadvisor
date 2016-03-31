@@ -14,8 +14,9 @@ import java.util.Date;
 public class GeneralHelper {
 
     // http://stackoverflow.com/a/6982154/2324937
-    // getting the exact date format in user's phone
+    // getting the date format used in the current device
     public static String dateToSystemFormat(Context context, Date date) {
+        // get the format, e.g dd/MM/yyyy
         final String format = Settings.System.getString(context.getContentResolver(), Settings.System.DATE_FORMAT);
         DateFormat dateFormat;
         if (TextUtils.isEmpty(format)) {

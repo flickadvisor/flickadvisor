@@ -15,7 +15,7 @@ import io.realm.annotations.PrimaryKey;
 public class MovieReview extends RealmObject {
     @PrimaryKey
     private Long id;
-    private UserTbl user;
+    private User user;
     private long movieId;
     private float rating;
     private String description;
@@ -24,14 +24,14 @@ public class MovieReview extends RealmObject {
     public MovieReview() {
     }
 
-    public MovieReview(long movieId, UserTbl user) {
+    public MovieReview(long movieId, User user) {
         this.user = user;
         this.movieId = movieId;
         this.description = null;
         this.rating = 0F;
     }
 
-    public MovieReview(long movieId, UserTbl user, float rating, String description) {
+    public MovieReview(long movieId, User user, float rating, String description) {
         this.movieId = movieId;
         this.user = user;
         this.rating = rating;
@@ -47,11 +47,11 @@ public class MovieReview extends RealmObject {
         this.id = id;
     }
 
-    public UserTbl getUser() {
+    public User getUser() {
         return user;
     }
 
-    public void setUser(UserTbl user) {
+    public void setUser(User user) {
         this.user = user;
     }
 

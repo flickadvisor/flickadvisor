@@ -26,22 +26,27 @@ import com.example.enda.flickadvisor.interfaces.MovieApiService;
 import com.example.enda.flickadvisor.interfaces.TMDbMovieApiService;
 import com.example.enda.flickadvisor.interfaces.UserApiService;
 import com.example.enda.flickadvisor.models.Genre;
+import com.example.enda.flickadvisor.models.Language;
 import com.example.enda.flickadvisor.models.Movie;
 import com.example.enda.flickadvisor.models.MovieReview;
+import com.example.enda.flickadvisor.models.User;
 import com.example.enda.flickadvisor.models.UserMovie;
-import com.example.enda.flickadvisor.models.UserTbl;
 import com.example.enda.flickadvisor.services.UserRealmService;
 import com.example.enda.flickadvisor.services.api.ApiServiceGenerator;
 import com.example.enda.flickadvisor.services.api.TMDbServiceGenerator;
 import com.github.clans.fab.FloatingActionButton;
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.squareup.picasso.Picasso;
 
 import org.parceler.Parcels;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import butterknife.Bind;
@@ -58,7 +63,8 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
     private String TAG_ACTIVITY = this.toString();
     private static Movie movie;
     private static UserMovie mUserMovie;
-    private UserTbl user;
+    private User user;
+    private static List<Language> mLanguages;
     private static boolean relationshipExists = false;
     private ReviewDialogFragment reviewDialog;
 
@@ -117,7 +123,7 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
                 getMovieWithId(movieId);
             }
         } else if (movie != null) {
-            bindDataToView(movie);
+            bindDataToView(movie, mLanguages);
             bindStarsToView();
             setFabButtonStates();
             mOpenReviews.setVisibility(View.VISIBLE);
@@ -225,7 +231,7 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
         return sum / reviews.size();
     }
 
-    private void bindDataToView(Movie movie) {
+    private void bindDataToView(Movie movie, List<Language> languages) {
         loadImageToPoster(movie.getPosterPath());
 
         Calendar c = new GregorianCalendar();
@@ -243,7 +249,18 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
             subTitleText = movie.getGenres().get(0).getName();
         }
         mSubtitleView.setText(subTitleText);
-        mLanguageTextView.setText(movie.getLanguage());
+
+        // concatenate the languages the movie is available in
+        StringBuilder sb = new StringBuilder();
+        String languagesString = "";
+        for (int i = 0; i < languages.size(); i++) {
+            Language l = languages.get(i);
+            sb.append(l.getName());
+            if (i < languages.size() -1) {
+                sb.append(", ");
+            }
+        }
+        mLanguageTextView.setText(sb.toString());
         mRuntimeTextView.setText(String.format("%s minutes", movie.getRuntime()));
         mOverviewTextView.setText(movie.getOverview());
 
@@ -258,23 +275,15 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
                 .into(mPosterView);
     }
 
-    private void getMovieWithId(long movieId) {
-        Call<JsonObject> call = tmbdMovieApiService.getMovieWithId(movieId);
+    private void getMovieWithId(final long movieId) {
+        Call<JsonObject> call = tmbdMovieApiService.getMovieWithId(movieId, Locale.getDefault().getDisplayLanguage());
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccess()) {
                     JsonObject json = response.body();
 
-                    movie = new Movie(json);
-                    RealmList<Genre> genres = new RealmList<>();
-                    for (JsonElement obj : json.getAsJsonArray("genres")) {
-                        genres.add(new Genre(obj.getAsJsonObject()));
-                    }
-                    movie.setGenres(genres);
-                    getMovieReviews(movie.getId());
-                    bindDataToView(movie);
-
+                    convertJsonToMovie(json);
                     if (UserRealmService.isLoggedIn()) {
                         getUserMovieRelationship(movie.getId(), user.getId());
                     }
@@ -286,6 +295,31 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
                 Log.e(TAG_ACTIVITY, t.getMessage());
             }
         });
+    }
+
+    private void convertJsonToMovie(JsonObject json) {
+        Gson gson = new Gson();
+
+        // convert JSON to objects
+        movie = new Movie(json);
+        // genres
+        RealmList<Genre> mGenres = new RealmList<>();
+        for (JsonElement g : json.getAsJsonArray("genres")) {
+            Genre genre = new Genre(g.getAsJsonObject());
+            mGenres.add(genre);
+        }
+        movie.setGenres(mGenres);
+
+        // languages
+        mLanguages = new ArrayList<>();
+        for (JsonElement l : json.getAsJsonArray("spoken_languages")) {
+            Language language = gson.fromJson(l, Language.class);
+            mLanguages.add(language);
+        }
+
+        getMovieReviews(movie.getId());
+        bindDataToView(movie, mLanguages);
+
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
@@ -348,28 +382,32 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
 
     @OnClick(R.id.fabRate)
     public void onClickRate() {
-        MovieReview userReview = null;
+        if (UserRealmService.isLoggedIn()) {
+            MovieReview userReview = null;
 
-        // check if the user has already rated this movie
-        if (!movie.getReviews().isEmpty()) {
-            for (MovieReview review : movie.getReviews()) {
-                if (Objects.equals(review.getUser().getId(), user.getId())) {
-                    userReview = review;
+            // check if the user has already rated this movie
+            if (!movie.getReviews().isEmpty()) {
+                for (MovieReview review : movie.getReviews()) {
+                    if (Objects.equals(review.getUser().getId(), user.getId())) {
+                        userReview = review;
+                    }
                 }
             }
-        }
 
-        if (userReview == null) {
-            // new rating
-            userReview = new MovieReview(movie.getId(), user);
-        }
+            if (userReview == null) {
+                // new rating
+                userReview = new MovieReview(movie.getId(), user);
+            }
 
-        // pass the Movie Review to dialog and create a new instance
-        reviewDialog = ReviewDialogFragment.newInstance(userReview);
-        reviewDialog.show(getFragmentManager(), "ReviewDialogFragment");
+            // pass the Movie Review to dialog and create a new instance
+            reviewDialog = ReviewDialogFragment.newInstance(userReview);
+            reviewDialog.show(getFragmentManager(), "ReviewDialogFragment");
 
-        if (!mUserMovie.isOnWatchedList()) {
-            onClickAddToSeenIt();
+            if (!mUserMovie.isOnWatchedList()) {
+                onClickAddToSeenIt();
+            }
+        } else {
+            signInToast();
         }
     }
 
@@ -496,7 +534,6 @@ public class MovieActivity extends AppCompatActivity implements ReviewDialogFrag
         }
     }
 
-    // I wish Android had Java 8 so I could use Lambdas, this is the bets option
     private void replaceOldReviewInList(RealmList<MovieReview> reviews, MovieReview review) {
         for (int i = 0; i < reviews.size(); i++) {
             if (Objects.equals(reviews.get(i).getId(), review.getId())) {

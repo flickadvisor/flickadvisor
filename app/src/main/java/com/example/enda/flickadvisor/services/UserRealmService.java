@@ -1,6 +1,6 @@
 package com.example.enda.flickadvisor.services;
 
-import com.example.enda.flickadvisor.models.UserTbl;
+import com.example.enda.flickadvisor.models.User;
 
 import io.realm.Realm;
 
@@ -11,9 +11,9 @@ public class UserRealmService {
 
     private static final Realm realm = Realm.getDefaultInstance();
 
-    public static void saveUser(UserTbl user) {
+    public static void saveUser(User user) {
         if (getUserWithId(user.getId()) != null) {
-            UserTbl old = getUserWithId(user.getId());
+            User old = getUserWithId(user.getId());
             removeUser(old);
         }
         realm.beginTransaction();
@@ -21,34 +21,34 @@ public class UserRealmService {
         realm.commitTransaction();
     }
 
-    public static UserTbl getCurrentUser() {
-        UserTbl user = realm.where(UserTbl.class)
+    public static User getCurrentUser() {
+        User user = realm.where(User.class)
                 .findFirst();
         return user == null ? null : user;
     }
 
-    private static void removeUser(UserTbl user) {
+    private static void removeUser(User user) {
         realm.beginTransaction();
         user.removeFromRealm();
         realm.commitTransaction();
     }
 
-    private static UserTbl getUserWithId(Long id) {
-        UserTbl user = realm.where(UserTbl.class)
+    private static User getUserWithId(Long id) {
+        User user = realm.where(User.class)
                 .equalTo("id", id)
                 .findFirst();
         return user == null ? null : user;
     }
 
     public static boolean isLoggedIn() {
-        UserTbl user = realm.where(UserTbl.class)
+        User user = realm.where(User.class)
         .findFirst();
         return user != null;
     }
 
     public static void logout() {
         realm.beginTransaction();
-        UserTbl user = realm.where(UserTbl.class)
+        User user = realm.where(User.class)
                 .findFirst();
         user.removeFromRealm();
         realm.commitTransaction();

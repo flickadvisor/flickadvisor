@@ -47,6 +47,10 @@ public class BrowseFragment extends Fragment {
         // Required empty public constructor
     }
 
+    public static BrowseFragment newInstance() {
+        return new BrowseFragment();
+    }
+
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -69,6 +73,7 @@ public class BrowseFragment extends Fragment {
         calOne.add(Calendar.MONTH, -1);
 
         Call<JsonObject> call = movieApiService.releasedBetween(
+                Locale.getDefault().getDisplayLanguage(),
                 getFormattedDate(calOne.getTime()),
                 getFormattedDate(calTwo.getTime()));
 

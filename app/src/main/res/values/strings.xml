@@ -41,4 +41,10 @@
     <string name="title_sort">Sort</string>
     <string name="title_highest_rated_first">Top Rated First</string>
     <string name="title_newest_first">Newest First</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_discover_fragment">Discover</string>
+    <string name="action_random_suggestion">Random Suggestion</string>
+    <string name="action_launch_advanced_search">Advanced Search</string>
 </resources>
